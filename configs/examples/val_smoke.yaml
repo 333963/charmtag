@@ -1,0 +1,11 @@
+# VAL: validate na score'ach smoke_vm (L, tylko odczyt przez symlinki) + ręczna kontrola z podpróbek npz S6/S
+paths:
+  h5_dir: ../../../../h5_v11/merged-v1.1-Aug7      # brak lokalnie (EOS) — validate nie czyta h5 poza hand_control
+  out_dir: ../../runs/smoke_vm
+validate:
+  hand_control: true
+  hand_variant: B
+  hand_rev: 1
+  hand_max_rows: 400000
+  hand_npz:
+    data_none: ~/mnt/charm/charm_work/S6_kand/sub/dp_data_p*.npz

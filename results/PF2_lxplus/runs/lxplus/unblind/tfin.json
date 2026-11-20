@@ -1,0 +1,57 @@
+{
+ "fields": {
+  "generated": "2026-11-05 19:03 UTC",
+  "pf": "/eos/user/k/klyczak/charm_q/pf_pairs",
+  "mode": "ODS\u0141ONI\u0118TE",
+  "unblind_src": " i `/eos/user/k/klyczak/charm_q/pf_pairs/unblind`",
+  "norm_mode": "direct",
+  "track_id": "d0z0",
+  "pairs_before_veto": 296782,
+  "pairs_shared_track": 226944,
+  "shared_pct": "76.5",
+  "pairs_kept": 56657,
+  "region": "blind",
+  "blind_rows": "| D0D0 | 2382 | 1385 | -42 % | 1.38 | 1.90 | 0.79 | 0.57 | 0.79 | 0.65 | 0.073 | \u2014 |\n| D\u207aD0 | 17744 | 7263 | -59 % | 1.60 | 2.71 | 0.69 | 0.41 | 1.79 | 0.94 | -0.005 | \u2014 |\n| D\u207aD\u207a | 92077 | 14005 | -85 % | 0.47 | 1.10 | 2.72 | 0.90 | 3.05 | 1.07 | 0.003 | \u2014 |",
+  "Zq_nominal": "2.17",
+  "Zq_pf": "3.49",
+  "toys_rows": "| D0D0 | 1.01 | -0.03 | 0.69 | 10000 | \u2714 | \u2714 | \u2714 |\n| D\u207aD0 | 1.01 | 0.03 | 0.68 | 10000 | \u2714 | \u2714 | \u2714 |\n| D\u207aD\u207a | 1.02 | -0.08 | 0.68 | 10000 | \u2714 | \u2714 | \u2714 |",
+  "syst_rows": "| D0D0 | 0.57 | 0.11 | 0.18 | 0.24 | \u2014 | \u2014 | 0.32 | 0.56 | \u2714 |\n| D\u207aD0 | 0.41 | 0.15 | 0.13 | 0.19 | \u2014 | \u2014 | 0.27 | 0.67 | \u2714 |\n| D\u207aD\u207a | 0.90 | 0.12 | 0.20 | 0.28 | \u2014 | \u2014 | 0.37 | 0.41 | \u2714 |",
+  "n_syst_json": 7,
+  "mix_line": "D0D0: \u03c7\u00b2/ndf SB\u00d7SB same vs mix 0.79, corr same 0.073 / mix -0.010, ramiona same/mix 0.988 \u00b7 D\u207aD0: \u03c7\u00b2/ndf SB\u00d7SB same vs mix 0.94, corr same -0.005 / mix 0.002, ramiona same/mix 0.974 \u00b7 D\u207aD\u207a: \u03c7\u00b2/ndf SB\u00d7SB same vs mix 1.20, corr same 0.003 / mix 0.003, ramiona same/mix 0.976",
+  "g6_line": "G6 \u017ar\u00f3d\u0142o: SB\u00d7SB nominal\u2192PF (NIEizolowane: miesza weto ze zmian\u0105 kodu); udzia\u0142 usuni\u0119tych SB\u00d7SB: D0D0 42 % (pas 30\u201365 %), D\u207aD0 59 % (pas 21\u201350 %), D\u207aD\u207a 85 % (pas 72\u201393 %)",
+  "gate_rows": "| G1 | toys \u03c3(pull) 0,9\u20131,1 | \u2714 | \u2714 | \u2714 |\n| G2 | toys |bias| < 0,1\u03c3 | \u2714 | \u2714 | \u2714 |\n| G3 | pokrycie 68 % 0,62\u20130,74 | \u2714 | \u2714 | \u2714 |\n| G4 | dev/ndf \u015blepy < 1,5 | \u2714 | \u2714 | \u2714 |\n| G6 | udzia\u0142 usuni\u0119tych par SB\u00d7SB w pasie (per kana\u0142) | \u2714 | \u2716 | \u2714 |\n| G7 | syst/stat < 1 | \u2714 | \u2714 | \u2714 |\n| G11 | Z_A PF \u2265 Z_A nom \u2212 0,1 | \u2714 | \u2714 | \u2714 |",
+  "verdict": "NO-GO",
+  "unblind_section": "| kana\u0142 | \u03bc\u0302 | 68 % | Z lok. | dev/ndf | \u03bc bez tagu | \u03ba=channel \u03bc (Z) |\n|---|---|---|---|---|---|---|\n| D0D0 | 1.16 \u00b1 0.55 | [0.64, 1.72] | 2.25 (exp 1.90) | 0.69 | 1.32 \u00b1 0.76 | 1.17 (2.28) |\n| D\u207aD0 | 1.16 \u00b1 0.42 | [0.75, 1.58] | 3.01 (exp 2.71) | 0.96 | 0.94 \u00b1 0.53 | 1.08 (2.79) |\n| D\u207aD\u207a | 1.39 \u00b1 0.93 | [0.49, 2.33] | 1.57 (exp 1.10) | 1.07 | 1.39 \u00b1 0.93 | 1.37 (1.55) |\n\n**Wsp\u00f3lne \u03bc = 1.25 [0.90, 1.51], Z = 4.06** (stat); z systematykami profilowanymi: \u03bc = 1.25, Z = 4.11.\nWynik vs \u015blepy Asimov: Z_A PF = 3.49; dane/MC \u03bc i przedzia\u0142 jak wy\u017cej (normalizacja: direct).",
+  "Z_obs": "4.06",
+  "Z_obs_note": "stat; z syst: 4.11"
+ },
+ "gates": {
+  "D0D0": {
+   "G4": true,
+   "G11": true,
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G7": true,
+   "G6": true
+  },
+  "DpD0": {
+   "G4": true,
+   "G11": true,
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G7": true,
+   "G6": false
+  },
+  "DpDp": {
+   "G4": true,
+   "G11": true,
+   "G1": true,
+   "G2": true,
+   "G3": true,
+   "G7": true,
+   "G6": true
+  }
+ }
+}

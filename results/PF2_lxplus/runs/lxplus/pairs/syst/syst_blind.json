@@ -1,0 +1,369 @@
+{
+ "rows": [
+  {
+   "group": "Kszta\u0142ty",
+   "source": "width_D0",
+   "desc": "szeroko\u015b\u0107 piku D0 \u00b16%",
+   "dmu": {
+    "D0D0": 0.08517775491890234,
+    "DpD0": 0.026991485081361177,
+    "DpDp": null
+   },
+   "dmu_common": 0.041081158079937195,
+   "dZ": -0.14031220676385825,
+   "note": "",
+   "pending": false
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "width_Dp",
+   "desc": "szeroko\u015b\u0107 piku D\u207a \u00b13%",
+   "dmu": {
+    "D0D0": null,
+    "DpD0": 0.025573903822933453,
+    "DpDp": 0.048635933150405375
+   },
+   "dmu_common": 0.020742312380691987,
+   "dZ": -0.06474783120592287,
+   "note": "",
+   "pending": false
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "mscale_D0",
+   "desc": "skala masy D0 \u00b11 MeV",
+   "dmu": {
+    "D0D0": 0.020008341413900732,
+    "DpD0": 0.007600946543122267,
+    "DpDp": null
+   },
+   "dmu_common": 0.010381084468312629,
+   "dZ": -0.03432051397161073,
+   "note": "",
+   "pending": false
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "mscale_Dp",
+   "desc": "skala masy D\u207a \u00b11 MeV",
+   "dmu": {
+    "D0D0": null,
+    "DpD0": 0.014740786350874946,
+    "DpDp": 0.026922651859137336
+   },
+   "dmu_common": 0.011820821856647876,
+   "dZ": -0.035038614330531015,
+   "note": "",
+   "pending": false
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "bkg_poly3",
+   "desc": "t\u0142o fa\u0142szywych n\u00f3g exp(poly2)\u2192exp(poly3)",
+   "dmu": {
+    "D0D0": 0.010789877609398646,
+    "DpD0": 0.05915959488651068,
+    "DpDp": 0.061448085527869845
+   },
+   "dmu_common": 0.04499808703511559,
+   "dZ": -0.10679463033016523,
+   "note": "D0D0: \u0394dev 5/5; DpD0: \u0394dev 16/8; DpDp: \u0394dev 6/3;",
+   "pending": false
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "swap_D0",
+   "desc": "udzia\u0142 swap\u00f3w K\u2194\u03c0 D0 \u00b120%",
+   "dmu": {
+    "D0D0": 0.02562909928995394,
+    "DpD0": 0.02737277499516999,
+    "DpDp": null
+   },
+   "dmu_common": 0.02352542700425471,
+   "dZ": -0.06397131378439047,
+   "note": "",
+   "pending": false
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "refl_Ds",
+   "desc": "refleksja Ds\u2192KK\u03c0 w D\u207a (5%, p\u0142aska)",
+   "dmu": {
+    "D0D0": null,
+    "DpD0": 0.01305149351627044,
+    "DpDp": 0.03824214593566411
+   },
+   "dmu_common": 0.012216881256337601,
+   "dZ": 0.026661241775863598,
+   "note": "",
+   "pending": false
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "refl_Lc",
+   "desc": "refleksja \u039bc\u2192pK\u03c0 w D\u207a (1%, p\u0142aska)",
+   "dmu": {
+    "D0D0": null,
+    "DpD0": 0.003933395592972122,
+    "DpDp": 0.008710385288346556
+   },
+   "dmu_common": 0.00333975522907377,
+   "dZ": 0.00538540824897682,
+   "note": "",
+   "pending": false
+  },
+  {
+   "group": "SF",
+   "source": "sf_D0",
+   "desc": "SF D0 (score) \u00b11\u03c3",
+   "dmu": {
+    "D0D0": 0.1533998615128378,
+    "DpD0": 0.07338257190772435,
+    "DpDp": null
+   },
+   "dmu_common": 0.08835113428408126,
+   "dZ": null,
+   "note": "",
+   "pending": false
+  },
+  {
+   "group": "SF",
+   "source": "sf_Dp",
+   "desc": "SF D\u207a (score) \u00b11\u03c3",
+   "dmu": {
+    "D0D0": null,
+    "DpD0": 0.0986333742137302,
+    "DpDp": 0.20146760003499553
+   },
+   "dmu_common": 0.08168689220709446,
+   "dZ": null,
+   "note": "",
+   "pending": false
+  },
+  {
+   "group": "SF",
+   "source": "sf_tag",
+   "desc": "SF tagu D* \u00b114%",
+   "dmu": {
+    "D0D0": 0.08775771279238964,
+    "DpD0": 0.0474625180817817,
+    "DpDp": null
+   },
+   "dmu_common": 0.05372323503307771,
+   "dZ": null,
+   "note": "",
+   "pending": false
+  },
+  {
+   "group": "Normalizacja",
+   "source": "mc_stat",
+   "desc": "statystyka MC par (+D*)",
+   "dmu": {
+    "D0D0": 0.21493857977011263,
+    "DpD0": 0.1585379813214696,
+    "DpDp": 0.25963573383822625
+   },
+   "dmu_common": 0.18766221030695598,
+   "dZ": null,
+   "note": "MC par (direct) \u2295 MC D* 2.7%",
+   "pending": false
+  },
+  {
+   "group": "Normalizacja",
+   "source": "ndstar_fit",
+   "desc": "N_D* z fitu \u0394m (dane)",
+   "dmu": {
+    "D0D0": 0.10479703992487469,
+    "DpD0": 0.10479703992487469,
+    "DpDp": 0.10479703992487469
+   },
+   "dmu_common": 0.10479703992487469,
+   "dZ": null,
+   "note": "fit \u0394m danych N_D*=5588\u00b1586",
+   "pending": false
+  },
+  {
+   "group": "Normalizacja",
+   "source": "tune_MPI",
+   "desc": "tune: MPI pT0Ref \u00b1",
+   "dmu": {
+    "D0D0": null,
+    "DpD0": null,
+    "DpDp": null
+   },
+   "dmu_common": null,
+   "dZ": null,
+   "note": "Pythia MPIup/MPIdown vs A3 \u2014 CZEKA (lxplus gen_syst)",
+   "pending": true
+  },
+  {
+   "group": "Normalizacja",
+   "source": "tune_CR",
+   "desc": "tune: CR range / tryb",
+   "dmu": {
+    "D0D0": null,
+    "DpD0": null,
+    "DpDp": null
+   },
+   "dmu_common": null,
+   "dZ": null,
+   "note": "Pythia CRup/CRdown/CRqcd vs A3 \u2014 CZEKA (lxplus gen_syst)",
+   "pending": true
+  },
+  {
+   "group": "Normalizacja",
+   "source": "tune_Monash",
+   "desc": "tune: Monash vs A3",
+   "dmu": {
+    "D0D0": null,
+    "DpD0": null,
+    "DpDp": null
+   },
+   "dmu_common": null,
+   "dZ": null,
+   "note": "Pythia Monash vs A3 \u2014 CZEKA (lxplus gen_syst)",
+   "pending": true
+  },
+  {
+   "group": "Normalizacja",
+   "source": "eff_ntrk",
+   "desc": "wydajno\u015b\u0107(n_trk)",
+   "dmu": {
+    "D0D0": 0.019933685837692394,
+    "DpD0": 0.010750298262248714,
+    "DpDp": 0.008601743244923465
+   },
+   "dmu_common": 0.013230653613947223,
+   "dZ": null,
+   "note": "mapa \u03b5: bez n_trk / n_trk=0,80\u00b70,90\u00b7n_ch (truth A3)",
+   "pending": false
+  },
+  {
+   "group": "Normalizacja",
+   "source": "eff_map_sample",
+   "desc": "mapa \u03b5: pr\u00f3bka MC",
+   "dmu": {
+    "D0D0": 0.0158067823668544,
+    "DpD0": 0.006065884430446089,
+    "DpDp": 0.0036319145114838136
+   },
+   "dmu_common": 0.008677982857723043,
+   "dZ": null,
+   "note": "mapa \u03b5 z ca\u0142ego MC",
+   "pending": false
+  },
+  {
+   "group": "Normalizacja",
+   "source": "diffraction_x1p5",
+   "desc": "dyfrakcja \u00d71,5",
+   "dmu": {
+    "D0D0": 2.220446049250313e-16,
+    "DpD0": 0.0,
+    "DpDp": 0.0
+   },
+   "dmu_common": 6.628621037230128e-17,
+   "dZ": null,
+   "note": "\u03c3_SD,DD,CD \u00d71,5 (prawda Pythii A3)",
+   "pending": false
+  },
+  {
+   "group": "\u03ba, kategorie",
+   "source": "kappa_channel",
+   "desc": "\u03ba: plan B \u2194 jedno \u03ba na kana\u0142",
+   "dmu": {
+    "D0D0": 0.023628316469746835,
+    "DpD0": 0.11081766815103167,
+    "DpDp": 0.015287799413933878
+   },
+   "dmu_common": 0.0731788846437756,
+   "dZ": -0.2502331905555435,
+   "note": "D0D0: B\u2192alt +0.01, alt\u2192B +0.02; DpD0: B\u2192alt -0.11, alt\u2192B +0.08; DpDp: B\u2192alt -0.01, alt\u2192B -0.02;",
+   "pending": false
+  },
+  {
+   "group": "\u03ba, kategorie",
+   "source": "kappa_partner03",
+   "desc": "\u03ba: wi\u0119z partnera \u03c3=0,3",
+   "dmu": {
+    "D0D0": 0.07461579848924971,
+    "DpD0": 0.11233028158605785,
+    "DpDp": 0.13101097761735403
+   },
+   "dmu_common": 0.10334190923811501,
+   "dZ": -0.21999291172984892,
+   "note": "D0D0: B\u2192alt +0.00, alt\u2192B +0.07; DpD0: B\u2192alt +0.00, alt\u2192B +0.11; DpDp: B\u2192alt +0.00, alt\u2192B -0.13;",
+   "pending": false
+  },
+  {
+   "group": "\u03ba, kategorie",
+   "source": "kappa_partner05",
+   "desc": "\u03ba: wi\u0119z partnera \u03c3=0,5",
+   "dmu": {
+    "D0D0": 0.13576059681509456,
+    "DpD0": 0.18356014532486853,
+    "DpDp": 0.1643889661491631
+   },
+   "dmu_common": 0.16696069662038615,
+   "dZ": -0.3320824382963723,
+   "note": "D0D0: B\u2192alt +0.00, alt\u2192B +0.14; DpD0: B\u2192alt +0.00, alt\u2192B +0.18; DpDp: B\u2192alt +0.00, alt\u2192B -0.16;",
+   "pending": false
+  },
+  {
+   "group": "\u03ba, kategorie",
+   "source": "cat_Y",
+   "desc": "wydajno\u015bci kategorii score \u00b15% (niezale\u017cnie)",
+   "dmu": {
+    "D0D0": 0.061371101980167354,
+    "DpD0": 0.053400717570530346,
+    "DpDp": 0.08185585492447714
+   },
+   "dmu_common": 0.05923845089456704,
+   "dZ": -0.00010271354200330762,
+   "note": "",
+   "pending": false
+  }
+ ],
+ "sigma_stat": {
+  "D0D0": 0.572916614752853,
+  "DpD0": 0.4110482733632778,
+  "DpDp": 0.8979001023364814
+ },
+ "Z_asimov": {
+  "D0D0": 1.8761029013313892,
+  "DpD0": 2.6309931128301636,
+  "DpDp": 1.1682191698920543
+ },
+ "Z_with_shape_syst": {
+  "D0D0": 1.8406836429671376,
+  "DpD0": 2.4798413718904126,
+  "DpDp": 1.1572624652430008
+ },
+ "totals": {
+  "Kszta\u0142ty": {
+   "D0D0": 0.09180880049537696,
+   "DpD0": 0.0780549137223523,
+   "DpDp": 0.091675967020891
+  },
+  "SF": {
+   "D0D0": 0.17672841782438206,
+   "DpD0": 0.1317810114972621,
+   "DpDp": 0.20146760003499553
+  },
+  "Normalizacja": {
+   "D0D0": 0.24047498591428956,
+   "DpD0": 0.19044441437110532,
+   "DpDp": 0.2801433823109165
+  },
+  "\u03ba, kategorie": {
+   "D0D0": 0.06576252350278698,
+   "DpD0": 0.12301297578499484,
+   "DpDp": 0.08327123030397549
+  }
+ },
+ "total_all": {
+  "D0D0": 0.3190841861688568,
+  "DpD0": 0.27360568657116463,
+  "DpDp": 0.36661708803875265
+ },
+ "total_common": 0.278896336206585
+}

@@ -1,0 +1,16 @@
+# Węzeł DAG J12EFF (VARS node, args, mem, flavour, penv z j12.dag).
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/j12eff/j12_job.sh $(args)
+output     = $(Q)/logs/j12eff/j12_$(node).$(ClusterId).out
+error      = $(Q)/logs/j12eff/j12_$(node).$(ClusterId).err
+log        = $(Q)/logs/j12eff/j12.log
+request_cpus   = 1
+request_memory = $(mem)
+request_disk   = 3GB
++JobFlavour    = "$(flavour)"
+should_transfer_files = NO
+getenv     = False
+environment = "$(penv)"
+queue

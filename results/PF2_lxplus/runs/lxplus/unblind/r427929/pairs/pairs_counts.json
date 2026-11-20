@@ -1,0 +1,96 @@
+{
+ "pairs_kept": 7193,
+ "region": "full",
+ "pairs_shared_track": 42706,
+ "pairs_before_veto": 49899,
+ "shared_detail": {
+  "D0D0": {
+   "sbsb": {
+    "n_pairs": 301,
+    "n_shared": 141,
+    "shared_1track": 141,
+    "shared_2tracks": 0,
+    "shared_K_K": 33,
+    "shared_K_pi": 59,
+    "shared_pi_pi": 49
+   },
+   "arms": {
+    "n_pairs": 924,
+    "n_shared": 451,
+    "shared_1track": 451,
+    "shared_2tracks": 0,
+    "shared_K_K": 108,
+    "shared_K_pi": 214,
+    "shared_pi_pi": 129
+   },
+   "centre": {
+    "n_pairs": 745,
+    "n_shared": 373,
+    "shared_1track": 373,
+    "shared_2tracks": 0,
+    "shared_K_K": 96,
+    "shared_K_pi": 166,
+    "shared_pi_pi": 111
+   }
+  },
+  "DpD0": {
+   "sbsb": {
+    "n_pairs": 2682,
+    "n_shared": 1918,
+    "shared_1track": 597,
+    "shared_2tracks": 1321,
+    "shared_K_K": 800,
+    "shared_K_pi": 913,
+    "shared_pi_pi": 901
+   },
+   "arms": {
+    "n_pairs": 5804,
+    "n_shared": 4283,
+    "shared_1track": 1307,
+    "shared_2tracks": 2976,
+    "shared_K_K": 1664,
+    "shared_K_pi": 2180,
+    "shared_pi_pi": 1865
+   },
+   "centre": {
+    "n_pairs": 1659,
+    "n_shared": 1051,
+    "shared_1track": 536,
+    "shared_2tracks": 515,
+    "shared_K_K": 100,
+    "shared_K_pi": 797,
+    "shared_pi_pi": 154
+   }
+  },
+  "DpDp": {
+   "sbsb": {
+    "n_pairs": 16022,
+    "n_shared": 14658,
+    "shared_1track": 3122,
+    "shared_2tracks": 11536,
+    "shared_K_K": 5371,
+    "shared_K_pi": 6506,
+    "shared_pi_pi": 7881
+   },
+   "arms": {
+    "n_pairs": 16529,
+    "n_shared": 15030,
+    "shared_1track": 3288,
+    "shared_2tracks": 11742,
+    "shared_K_K": 5329,
+    "shared_K_pi": 6645,
+    "shared_pi_pi": 8104
+   },
+   "centre": {
+    "n_pairs": 5233,
+    "n_shared": 4801,
+    "shared_1track": 856,
+    "shared_2tracks": 3945,
+    "shared_K_K": 1805,
+    "shared_K_pi": 2022,
+    "shared_pi_pi": 2693
+   }
+  }
+ },
+ "track_id": "d0z0"
+}

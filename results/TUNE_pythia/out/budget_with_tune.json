@@ -1,0 +1,228 @@
+{
+ "rules": {
+  "dmu_norm": "Δμ/μ = |δ| (norm.py l. 119); δ_grupy = max |a/b−1| po wariantach (l. 97–110)",
+  "common": "Σ w·Δμ / Σ w, w = 1/σ²_stat, brak = 0 (report.py l. 40–41, 76–77)",
+  "sums": "kwadratura, bez pending i kappa_partner* (report.py l. 86–93, 112–113)"
+ },
+ "check_old": {
+  "rows_common_maxdiff": 0.0,
+  "sums": {
+   "Kształty": {
+    "D0D0": 0.0,
+    "DpD0": 0.0,
+    "DpDp": 0.0,
+    "common": 0.0004428689329157437
+   },
+   "SF": {
+    "D0D0": 0.0,
+    "DpD0": 0.0,
+    "DpDp": 0.0,
+    "common": -0.00022421591902199722
+   },
+   "Normalizacja": {
+    "D0D0": 0.0,
+    "DpD0": 0.0,
+    "DpDp": 0.0,
+    "common": -0.0004776523516896447
+   },
+   "κ, kategorie": {
+    "D0D0": 0.0,
+    "DpD0": 0.0,
+    "DpDp": 0.0,
+    "common": 0.00015064111356356824
+   },
+   "wszystko": {
+    "D0D0": 0.0,
+    "DpD0": 0.0,
+    "DpDp": 0.0,
+    "common": 0.0
+   }
+  },
+  "sums_maxdiff": 0.0004776523516896447
+ },
+ "sigma_stat": {
+  "D0D0": 0.572916614752853,
+  "DpD0": 0.4110482733632778,
+  "DpDp": 0.8979001023364814
+ },
+ "tune_rows": {
+  "tune_MPI": {
+   "dmu": {
+    "D0D0": 0.039777956907901535,
+    "DpD0": 0.040719125064676565,
+    "DpDp": 0.03749148579298334
+   },
+   "dmu_common": 0.0400458826606437,
+   "source_of_numbers": "norm.collect(truth_norm.json)",
+   "maxdiff_vs_tune_syst_json": 0.0,
+   "asym_up": {
+    "D0D0": 0.036391164191808656,
+    "DpD0": 0.03124971957692857,
+    "DpDp": 0.03562480949885782,
+    "common": 0.0333163141404177
+   },
+   "asym_down": {
+    "D0D0": -0.038256203301514025,
+    "DpD0": -0.03912595058935431,
+    "DpDp": -0.03613666840294849,
+    "common": -0.03850299849923334
+   },
+   "variants": [
+    "MPIup",
+    "MPIdown"
+   ]
+  },
+  "tune_CR": {
+   "dmu": {
+    "D0D0": 0.11237625166938137,
+    "DpD0": 0.1088500025847533,
+    "DpDp": 0.09570683728480345
+   },
+   "dmu_common": 0.10830529610507923,
+   "source_of_numbers": "norm.collect(truth_norm.json)",
+   "maxdiff_vs_tune_syst_json": 0.0,
+   "asym_up": {
+    "D0D0": 0.126603475718998,
+    "DpD0": 0.12214554553158208,
+    "DpDp": 0.10583607311310161,
+    "common": 0.12149414602764468
+   },
+   "asym_down": {
+    "D0D0": -0.04039169027326728,
+    "DpD0": -0.040202315852464254,
+    "DpDp": -0.03802442785809612,
+    "common": -0.03999415441322107
+   },
+   "variants": [
+    "CRup",
+    "CRdown",
+    "CRqcd"
+   ]
+  },
+  "tune_Monash": {
+   "dmu": {
+    "D0D0": 0.01965748182882754,
+    "DpD0": 0.01907040084575251,
+    "DpDp": 0.01738541623354317
+   },
+   "dmu_common": 0.01904087154552319,
+   "source_of_numbers": "norm.collect(truth_norm.json)",
+   "maxdiff_vs_tune_syst_json": 0.0,
+   "asym_up": {
+    "D0D0": 0.0,
+    "DpD0": 0.0,
+    "DpDp": 0.0,
+    "common": 0.0
+   },
+   "asym_down": {
+    "D0D0": -0.019278514774952127,
+    "DpD0": -0.018713526396140545,
+    "DpDp": -0.017088328529325292,
+    "common": -0.0186846681894396
+   },
+   "variants": [
+    "Monash"
+   ]
+  }
+ },
+ "tune_quadrature": {
+  "D0D0": 0.12081855977819672,
+  "DpD0": 0.11777117812585237,
+  "DpDp": 0.10424808347225795,
+  "common": 0.11703104148768415
+ },
+ "ndstar_fit_row": {
+  "D0D0": 0.10479703992487469,
+  "DpD0": 0.10479703992487469,
+  "DpDp": 0.10479703992487469,
+  "common": 0.10479703992487469
+ },
+ "budget": {
+  "przed": {
+   "Normalizacja": {
+    "D0D0": 0.24047498591428956,
+    "DpD0": 0.19044441437110532,
+    "DpDp": 0.2801433823109165,
+    "common": 0.21552234764831035
+   },
+   "wszystko": {
+    "D0D0": 0.3190841861688568,
+    "DpD0": 0.27360568657116463,
+    "DpDp": 0.36661708803875265,
+    "common": 0.278896336206585
+   },
+   "Normalizacja_bez_NDS": {
+    "D0D0": 0.2164389042512043,
+    "DpD0": 0.1590177832449487,
+    "DpDp": 0.25980357017482375,
+    "common": 0.18832807214757807
+   },
+   "wszystko_bez_NDS": {
+    "D0D0": 0.3013839715147869,
+    "DpD0": 0.25274028595984177,
+    "DpDp": 0.3513198964832461,
+    "common": 0.2584584043370243
+   }
+  },
+  "po": {
+   "Normalizacja": {
+    "D0D0": 0.26911957052090335,
+    "DpD0": 0.22391767541287247,
+    "DpDp": 0.29891132056220154,
+    "common": 0.24524711416759054
+   },
+   "wszystko": {
+    "D0D0": 0.3411917968678605,
+    "DpD0": 0.29787601803641334,
+    "DpDp": 0.381150563622374,
+    "common": 0.30245566786084294
+   },
+   "Normalizacja_bez_NDS": {
+    "D0D0": 0.24787683163284885,
+    "DpD0": 0.1978805341242254,
+    "DpDp": 0.27993848964232027,
+    "common": 0.221728950366242
+   },
+   "wszystko_bez_NDS": {
+    "D0D0": 0.3246989723927435,
+    "DpD0": 0.2788327501284845,
+    "DpDp": 0.3664605470888204,
+    "common": 0.283719952495648
+   }
+  }
+ },
+ "base_source": "NDS_ndstar/rerun_2026-11-12/rerun.md (TL;DR), decyzja z 12.11.2026",
+ "scaled_common": {
+  "mu_common": 1.495,
+  "ndstar_rel": 0.219,
+  "ndstar_N": 4436,
+  "tune_abs": 0.1749614070240878,
+  "syst_bez_NDS_z_tune_abs": 0.42416132898099385,
+  "syst_bez_NDS_bez_tune_abs": 0.38639531448385134,
+  "syst_z_NDS_z_tune_abs": 0.4521712234519602,
+  "NDS_abs": 0.327405,
+  "tune_CR_up_abs": 0.1816337483113288,
+  "tune_CR_down_abs": -0.05979126084776551,
+  "tune_asym_up_rel": 0.12597938048303636,
+  "syst_bez_NDS_asym_up_abs": 0.42985228096531064,
+  "tune_asym_down_rel": 0.058575849170199756,
+  "syst_bez_NDS_asym_down_abs": 0.3961943975124577
+ },
+ "previous_base": {
+  "mu_common": 1.49,
+  "ndstar_rel": 0.206,
+  "ndstar_N": 4443,
+  "tune_abs": 0.17437625181664937,
+  "syst_bez_NDS_z_tune_abs": 0.4227427292185155,
+  "syst_bez_NDS_bez_tune_abs": 0.38510302246216616,
+  "syst_z_NDS_z_tune_abs": 0.450658945112656,
+  "NDS_abs": 0.30694,
+  "tune_CR_up_abs": 0.18102627758119055,
+  "tune_CR_down_abs": -0.059591290075699396,
+  "tune_asym_up_rel": 0.12597938048303636,
+  "syst_bez_NDS_asym_up_abs": 0.4284146479186039,
+  "tune_asym_down_rel": 0.058575849170199756,
+  "syst_bez_NDS_asym_down_abs": 0.3948693326378341,
+  "note": "zapis historyczny z 12.11 przed zmianą bazy N_D* (UNB_WYNIK §1b, aktualizacja 09.11)"
+ }
+}

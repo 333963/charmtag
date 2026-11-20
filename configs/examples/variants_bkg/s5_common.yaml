@@ -1,0 +1,7 @@
+# S5: wspólne dla wariantów na lxplus — fit przy WP 80/70/50, mixing nóg w pairs, tylko próbki potrzebne do porównania
+fit:
+  extra_wps: [0.80, 0.50]
+  datasets: [data_none]
+pairs:
+  mix_control: true
+  mix_factor: 2

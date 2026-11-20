@@ -1,0 +1,16 @@
+# UB427_NDS — jeden węzeł (fit wariantów N_D* 427929).
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/ub427_nds/n8_job.sh fit
+output     = $(Q)/logs/ub427nds/n8.$(ClusterId).out
+error      = $(Q)/logs/ub427nds/n8.$(ClusterId).err
+log        = $(Q)/logs/ub427nds/n8.log
+request_cpus   = 2
+request_memory = 8GB
+request_disk   = 20GB
++JobFlavour    = "workday"
++JobBatchName  = "charm_ub427nds"
+should_transfer_files = NO
+getenv     = False
+queue

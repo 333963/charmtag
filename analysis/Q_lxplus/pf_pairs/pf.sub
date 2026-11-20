@@ -1,0 +1,15 @@
+# Węzeł DAG PF2 (VARS step, arg, arg2, cpus, mem, flavour z pf.dag).
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/pf_pairs/pf_job.sh $(step) $(arg) $(arg2)
+output     = $(Q)/logs/pf/$(step)_$(arg)_$(arg2).$(ClusterId).out
+error      = $(Q)/logs/pf/$(step)_$(arg)_$(arg2).$(ClusterId).err
+log        = $(Q)/logs/pf/pf.log
+request_cpus   = $(cpus)
+request_memory = $(mem)
+request_disk   = 4GB
++JobFlavour    = "$(flavour)"
+should_transfer_files = NO
+getenv     = False
+queue

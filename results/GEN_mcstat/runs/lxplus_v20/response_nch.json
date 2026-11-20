@@ -1,0 +1,12 @@
+{
+ "skipped": "ntuple mb_nd v1.1 nie maj\u0105 TruthParticles (tylko TruthDmesons) \u2014 n_ch\u2192n_trk niedost\u0119pne; zostaje proxy n_trk = \u03b5_trk\u00b7n_ch (0,80/0,85/0,90)",
+ "truth_particles_info_first_file": {
+  "trees": [
+   "DSelection_Vertices",
+   "CharmAnalysis",
+   "Tracks",
+   "metadata"
+  ],
+  "truth_particle_branches": []
+ }
+}

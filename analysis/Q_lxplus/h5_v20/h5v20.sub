@@ -1,0 +1,17 @@
+# Węzeł DAG h5_v20: jeden kawałek (≤ CHUNK plików) jednej próbki; 1 proces = 1 plik ROOT. VARS z h5v20.dag: list, node.
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/h5_v20/convert_v20.sh $(key) $(rootfile) $(tag) $(presels)
+output     = $(Q)/logs/h5_v20/$(key)_$(tag).$(ClusterId).out
+error      = $(Q)/logs/h5_v20/$(key)_$(tag).$(ClusterId).err
+log        = $(Q)/logs/h5_v20/h5v20.log
+request_cpus   = 1
+request_memory = 6GB
+request_disk   = 4GB
++JobFlavour    = "longlunch"
+should_transfer_files = NO
+getenv     = False
+environment = "$(penv)"
+max_retries = 2
+queue key,rootfile,tag,presels from $(list)

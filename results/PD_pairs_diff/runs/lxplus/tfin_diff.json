@@ -1,0 +1,124 @@
+{
+ "generated": "2026-11-05 21:42 UTC",
+ "diff_dir": "/eos/user/k/klyczak/charm_q/pf_pairs/diff",
+ "unblind_dir": "/eos/user/k/klyczak/charm_q/pf_pairs/unblind",
+ "var": "sign",
+ "labels": [
+  "like",
+  "opposite"
+ ],
+ "channels_fitted": [
+  "D0D0",
+  "DpD0",
+  "DpDp"
+ ],
+ "consistency": {
+  "D0D0": {
+   "sum_mu_f": null,
+   "mu_nominal": 1.1583044946244858,
+   "mu_nominal_err": 0.5519859131405488
+  },
+  "DpD0": {
+   "sum_mu_f": null,
+   "mu_nominal": 1.1647914876500156,
+   "mu_nominal_err": 0.42391636812169076
+  },
+  "DpDp": {
+   "sum_mu_f": 1.8143222553160547,
+   "mu_nominal": 1.3855940297535303,
+   "mu_nominal_err": 0.9251674116590511
+  }
+ },
+ "like_sign": {
+  "lhcb_ls_os": [
+   0.1,
+   0.13
+  ],
+  "lhcb_f_ls": [
+   0.09090909090909091,
+   0.11504424778761063
+  ],
+  "channels": {
+   "DpDp": {
+    "N_LS_sig": 39.34019806617673,
+    "N_OS_sig": 40.54321492513191,
+    "f_LS": [
+     0.4924701711287294,
+     0.35327908193620905
+    ],
+    "f_LS_pythia": [
+     0.2,
+     0.10327955589886445
+    ],
+    "ls_os": 0.9703275415830565,
+    "Z_reject_pythia": 0.7461269107879678,
+    "Z_reject_dps": 0.11180824016427925
+   }
+  },
+  "Z_reject_pythia_mc_combined": 0.7413065340639212,
+  "Z_reject_dps_flat_combined": 0.07301433429471763
+ },
+ "tests": {
+  "pythia_mc": {
+   "mu_global": 1.5,
+   "mu_global_68": [
+    0.2975000000000001,
+    2.5600000000000005
+   ],
+   "Z_global": 1.2865816293830652,
+   "chi2_global": 0.5567053670019959,
+   "chi2_bins_common": 0.00716998955613235,
+   "dchi2": 0.5495353774458636,
+   "ndf": 1,
+   "p_flat_in_bins": 0.458507600806067
+  },
+  "dps_flat": {
+   "mu_global": 1.8000000000000003,
+   "mu_global_68": [
+    0.5750000000000002,
+    3.1450000000000005
+   ],
+   "Z_global": 1.4830699826708602,
+   "chi2_global": 0.01250108256863314,
+   "chi2_bins_common": 0.007169989556132364,
+   "dchi2": 0.005331093012500777,
+   "ndf": 1,
+   "p_flat_in_bins": 0.9417947108393266
+  }
+ },
+ "bins": {
+  "like": {
+   "mu": 4.5,
+   "mu_68": [
+    0.19999999999999996,
+    9.165000000000001
+   ],
+   "q_shape": 0.0,
+   "Z": 1.049286167265435,
+   "channels": [
+    "DpDp"
+   ]
+  },
+  "opposite": {
+   "mu": 1.25,
+   "mu_68": [
+    0.06000000000000005,
+    2.35
+   ],
+   "q_shape": 0.00716998955613235,
+   "Z": 1.050631336719622,
+   "channels": [
+    "DpDp"
+   ]
+  }
+ },
+ "nominal_combined": {
+  "mu_common": 1.25,
+  "mu_common_68": [
+   0.8999999999999999,
+   1.5125000000000002
+  ],
+  "q0": 16.507240206663482,
+  "Z": 4.062910312407041
+ }
+}

@@ -1,0 +1,10 @@
+# klucz          katalog w $RAW (dataset v1.1)                                                      presele            oczekiwane pliki (listing CERNBox 2026-11-02)
+data_428770      user.malewick.data.minbias.428770.CharmAnalysis.Dpt3to150GeV.v1.1.Aug7_EXT0         none,single_tag    39
+mb_nd            user.malewick.mc23.minbiasND.CharmAnalysis.Dpt3to150GeV.v1.1.Aug7_EXT0              none               80
+mb_sd            user.malewick.mc23.minbiasSD.CharmAnalysis.Dpt3to150GeV.v1.1.Aug7_EXT0              none               11
+mb_dd            user.malewick.mc23.minbiasDD.CharmAnalysis.Dpt3to150GeV.v1.1.Aug7_EXT0              none               10
+mb_cd            user.malewick.mc23.minbiasCD.CharmAnalysis.Dpt3to150GeV.v1.1.Aug7_EXT0              none               20
+fd_nd            user.malewick.mc23.forcedDecay.ND2.CharmAnalysis.Dpt3to150GeV.v1.1.Aug7_EXT0        none               24
+fd_sd            user.malewick.mc23.forcedDecay.SD.CharmAnalysis.Dpt3to150GeV.v1.1.Aug7_EXT0         none               11
+fd_dd            user.malewick.mc23.forcedDecay.DD.CharmAnalysis.Dpt3to150GeV.v1.1.Aug7_EXT0         none               7
+fd_cd            user.malewick.mc23.forcedDecay.CD.CharmAnalysis.Dpt3to150GeV.v1.1.Aug7_EXT0         none               14

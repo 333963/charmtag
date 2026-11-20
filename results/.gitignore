@@ -1,0 +1,4 @@
+# Układ odwzorowuje ~/Documents/charm/charm_work (m.in. .../runs/lxplus/...), więc reguły z głównego .gitignore
+# dla katalogów runs/ i plików *.log tutaj nie obowiązują. Wzorce binarne (*.npz, *.h5, *.root, ...) obowiązują nadal.
+!runs/
+!*.log

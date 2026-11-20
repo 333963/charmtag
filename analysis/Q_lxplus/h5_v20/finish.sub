@@ -1,0 +1,16 @@
+# Węzeł końcowy h5_v20: meta/<próbka>.json + summary.json, DONE gdy komplet (finish_h5v20.sh).
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/h5_v20/finish_h5v20.sh
+output     = $(Q)/logs/h5_v20/finish.$(ClusterId).out
+error      = $(Q)/logs/h5_v20/finish.$(ClusterId).err
+log        = $(Q)/logs/h5_v20/h5v20.log
+request_cpus   = 1
+request_memory = 32GB
+request_disk   = 1GB
++JobFlavour    = "longlunch"
+should_transfer_files = NO
+getenv     = False
+environment = "$(penv)"
+queue

@@ -1,0 +1,10 @@
+# S8: tło treningowe = MC tła (incl_mc truth≥8) w |m−m0| < sideband_min ważone SALAD do danych SB (interpolacja w m).
+# Zalecenie S8: NIE jako nominał (ΔZ≈0 wg S4/S8), tylko wariant porównawczy S5 / systematyka kształtu (`charmtag s8salad`).
+training:
+  bkg_source: synthetic
+  bkg_options:
+    synthetic_model: salad
+    salad_kind: sk_mlp        # sk_mlp | hgb | hgb_nom | mlp (torch, S4)
+    salad_region: inner       # inner (|m−m0|<sideband_min) | sr
+    salad_max_n: 400000
+    salad_mlp_iter: 60

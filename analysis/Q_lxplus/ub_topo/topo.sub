@@ -1,0 +1,16 @@
+# Węzeł DAG UB_TOPO (VARS step, cpus, mem, flavour, penv z topo.dag).
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/ub_topo/topo_job.sh $(step)
+output     = $(Q)/logs/ubtopo/topo_$(step).$(ClusterId).out
+error      = $(Q)/logs/ubtopo/topo_$(step).$(ClusterId).err
+log        = $(Q)/logs/ubtopo/topo.log
+request_cpus   = $(cpus)
+request_memory = $(mem)
+request_disk   = 4GB
++JobFlavour    = "$(flavour)"
+should_transfer_files = NO
+getenv     = False
+environment = "$(penv)"
+queue

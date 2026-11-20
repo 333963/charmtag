@@ -1,0 +1,92 @@
+diff -ru -x __pycache__ -x '*.pyc' ../AA_merge/src/.pytest_cache/v/cache/nodeids src/.pytest_cache/v/cache/nodeids
+--- ../AA_merge/src/.pytest_cache/v/cache/nodeids	2026-11-04 04:34:21.231406233 +0000
++++ src/.pytest_cache/v/cache/nodeids	2026-11-04 05:20:41.691648027 +0000
+@@ -71,6 +71,9 @@
+   "tests/test_pairs.py::test_toys_pull",
+   "tests/test_pairs.py::test_track_id",
+   "tests/test_pairs.py::test_weight_factors",
++  "tests/test_pf_trackid.py::test_d0z0_matches_refit_track_and_pt_eta_does_not",
++  "tests/test_pf_trackid.py::test_default_is_d0z0",
++  "tests/test_pf_trackid.py::test_missing_d0_columns_falls_back",
+   "tests/test_regression_s1.py::test_s1_effB_ratios_within_tolerance",
+   "tests/test_regression_s1.py::test_s1_reflection_template_has_errors_and_is_not_clipped",
+   "tests/test_s5_bkg.py::test_cli_dispatch_s5compare",
+diff -ru -x __pycache__ -x '*.pyc' ../AA_merge/src/charmtag/pairs/build.py src/charmtag/pairs/build.py
+--- ../AA_merge/src/charmtag/pairs/build.py	2026-11-04 04:03:46.952018459 +0000
++++ src/charmtag/pairs/build.py	2026-11-04 05:20:40.304629192 +0000
+@@ -47,6 +47,7 @@
+     "lumi_fraction": 23 / 47,             # joby 25–47 z 47 (data_428770_POLOWA.txt)
+     "R_reference": 1.70,
+     "chunk_rows": 2_000_000,
++    "track_id": "d0z0",                   # PF 2026-11-04: ID śladu z bitów (d0, z0sinθ_PV), niezależne od refitu; "pt_eta" = stare (weto wspólnych śladów nieskuteczne)
+ }
+ 
+ 
+@@ -66,18 +67,41 @@
+ 
+ # ----------------------------------------------------------------------------- ślady z h5
+ def _trk_id(pt, eta):
++    """Stary identyfikator (bity pT, η córki). UWAGA (PF, 2026-11-04): pędy córek w h5 są PO refit wierzchołka kandydata,
++    więc ten sam ślad w dwóch kandydatach ma inne bity → weto wspólnych śladów nie działało (0 % w D⁺, tylko swapy w D0)."""
+     pt = np.asarray(pt, np.float32)
+     eta = np.asarray(eta, np.float32)
+     tid = (pt.view(np.uint32).astype(np.int64) << 31) ^ eta.view(np.uint32).astype(np.int64)
+     return np.where(pt > 0, tid, -1)
+ 
+ 
++def _trk_id_d0z0(pt, d0, z0):
++    """Identyfikator śladu z parametrów toru względem PV (d0, z0·sinθ) — niezależnych od refitu kandydata (PF):
++    na danych v1.1 100 % par z tolerancją 1 % w (pT,η,φ) ma identyczne bity (d0, z0), a 3,7 % par dzieli ślad przy różnicy pT > 1 %."""
++    pt = np.asarray(pt, np.float32)
++    d0 = np.asarray(d0, np.float32)
++    z0 = np.asarray(z0, np.float32)
++    tid = (d0.view(np.uint32).astype(np.int64) << 31) ^ z0.view(np.uint32).astype(np.int64)
++    return np.where(pt > 0, tid, -1)
++
++
++def track_ids(cfg, g):
++    """Lista 3 tablic ID śladów córek wg `pairs.track_id`: d0z0 (domyślnie, poprawne) | pt_eta (stare, do odtworzenia starych liczb)."""
++    mode = pcfg(cfg)["track_id"]
++    if mode == "pt_eta" or not all(f"d_d0{i}" in g and f"d_z0{i}" in g for i in range(3)):
++        if mode != "pt_eta":
++            log.warning("pairs: brak kolumn d_d0/d_z0 w źródle — ID śladów z (pT, η) (weto wspólnych śladów nieskuteczne)")
++        return [_trk_id(g[f"d_pt{i}"], g[f"d_eta{i}"]) for i in range(3)]
++    return [_trk_id_d0z0(g[f"d_pt{i}"], g[f"d_d0{i}"], g[f"d_z0{i}"]) for i in range(3)]
++
++
+ def scan_source(cfg, key, rows: np.ndarray, chunk=2_000_000, dstar=True, count_events=True):
+     """Jeden przebieg po pliku źródłowym: ślady dla `rows`, kandydaci D* (Δm < 0.165), liczba zdarzeń z kandydatami."""
+     path = C.sample_path(cfg, key)
+     ds_name = cfg["io"]["dataset"]
+     cm = resolve_columns(list_columns(path, ds_name), cfg["columns"], 3)
+-    need = ["run", "event", "decay_type", "m", "dm", "truth", "pt"] + [f"d_pt{i}" for i in range(3)] + [f"d_eta{i}" for i in range(3)]
++    need = (["run", "event", "decay_type", "m", "dm", "truth", "pt"] + [f"d_pt{i}" for i in range(3)] + [f"d_eta{i}" for i in range(3)]
++            + [f"d_d0{i}" for i in range(3)] + [f"d_z0{i}" for i in range(3)])  # PF: d0/z0 → ID śladu niezależne od refitu
+     cols = {k: cm.get(k) for k in need if cm.get(k)}
+     rows = np.unique(np.asarray(rows, np.int64))
+     trk, dst, evs = [], [], []
+@@ -90,7 +114,7 @@
+             stop = min(n, start + chunk)
+             a = ds.fields(list(cols.values()))[start:stop]
+             g = {k: np.asarray(a[v]) for k, v in cols.items()}
+-            t = [_trk_id(g[f"d_pt{i}"], g[f"d_eta{i}"]) for i in range(3)]
++            t = track_ids(cfg, g)
+             run = g["run"].astype(np.int64) if "run" in g else np.zeros(stop - start, np.int64)
+             sel = rows[(rows >= start) & (rows < stop)] - start
+             if len(sel):
+diff -ru -x __pycache__ -x '*.pyc' ../AA_merge/src/charmtag/pairs/hists.py src/charmtag/pairs/hists.py
+--- ../AA_merge/src/charmtag/pairs/hists.py	2026-11-04 03:35:03.722486808 +0000
++++ src/charmtag/pairs/hists.py	2026-11-04 05:20:12.155286812 +0000
+@@ -44,7 +44,10 @@
+     for sf, g in L.groupby("source_file", sort=False):
+         P = g.merge(g, on=["source_file", "entry"], suffixes=("1", "2"))
+         P = P[(P.decay_type1 < P.decay_type2) | ((P.decay_type1 == P.decay_type2) & (P.cand1 < P.cand2))]
+-        P = P[~shared_track(P)]
++        sh = shared_track(P)
++        counts["pairs_shared_track"] = counts.get("pairs_shared_track", 0) + int(sh.sum())  # PF: diagnostyka weta
++        counts["pairs_before_veto"] = counts.get("pairs_before_veto", 0) + int(len(P))
++        P = P[~sh]
+         centre = (P.win1 & P.win2).to_numpy()
+         arms = (P.win1 ^ P.win2).to_numpy()
+         if region != "full":
+Only in src/tests: test_pf_trackid.py

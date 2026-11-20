@@ -1,0 +1,17 @@
+# trigmc: generacja Pythii (NJ × NEV, ziarno = TM_SEED0 + ProcId + 1; pomija istniejące)
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/trigmc/tm_job.sh gen $(ProcId)
+environment = "TM_NEV=$(nev) TM_SEED0=$(seed0) TM_OUT=$(tmout)"
+output     = $(Q)/logs/trigmc/gen_$(ProcId).$(ClusterId).out
+error      = $(Q)/logs/trigmc/gen_$(ProcId).$(ClusterId).err
+log        = $(Q)/logs/trigmc/gen.log
+request_cpus   = 1
+request_memory = 2GB
+request_disk   = 2GB
++JobFlavour    = "workday"
+should_transfer_files = NO
+getenv     = False
+max_retries = 2
+queue $(nj)

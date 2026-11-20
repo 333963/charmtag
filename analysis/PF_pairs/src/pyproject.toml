@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "charmtag"
+version = "1.0.0"
+description = "Klasyfikator pojedynczego D (XGBoost, k-fold, tło z sidebandów danych) + fit masy (iminuit)"
+requires-python = ">=3.9"
+dependencies = ["numpy", "pandas", "h5py", "scipy", "scikit-learn", "xgboost", "iminuit>=2.20", "pyyaml", "matplotlib"]
+
+[project.scripts]
+charmtag = "charmtag.cli:main"
+
+[tool.setuptools]
+packages = ["charmtag", "charmtag.pairs", "charmtag.syst", "charmtag.bkggen", "charmtag.hand"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

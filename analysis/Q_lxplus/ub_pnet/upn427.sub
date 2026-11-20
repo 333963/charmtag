@@ -1,0 +1,17 @@
+# Węzeł DAG UBPNET427 (VARS step, g, cpus, mem, disk, flavour, penv).
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/ub_pnet/upn427_job.sh $(step) $(g)
+output     = $(Q)/logs/ubpnet427/upn4_$(step)_$(g).$(ClusterId).out
+error      = $(Q)/logs/ubpnet427/upn4_$(step)_$(g).$(ClusterId).err
+log        = $(Q)/logs/ubpnet427/upn4.log
+request_cpus   = $(cpus)
+request_memory = $(mem)
+request_disk   = $(disk)
++JobFlavour    = "$(flavour)"
++JobBatchName  = "charm_ubpnet427"
+should_transfer_files = NO
+getenv     = False
+environment = "$(penv)"
+queue

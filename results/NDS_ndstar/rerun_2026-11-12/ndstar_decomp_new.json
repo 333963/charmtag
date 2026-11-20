@@ -1,0 +1,87 @@
+{
+ "dstar_refit_file": "/Users/k/Documents/charm/charm_work/REPO/CHARM_git/charmtag/dstar_refit.py",
+ "0.05|NDS_shape(V MC)": {
+  "N": 4436.390108391369,
+  "N_err": 670.8561890721969,
+  "scale": 1.0242866492509446,
+  "mu": 145.3996149611561,
+  "valid": true,
+  "chi2": 335.8088274421242,
+  "ndf": 383,
+  "n_entries": 482979,
+  "bkg_model": "threshold_pol2",
+  "edm": 3.9851136691105155e-06,
+  "posdef": true,
+  "attempts": [
+   {
+    "model": "threshold_pol2",
+    "valid": true,
+    "N": 4436.390108391369,
+    "edm": 3.9851136691105155e-06
+   }
+  ]
+ },
+ "0.05|PD_shape(pairs MC)": {
+  "N": 4100.304918224152,
+  "N_err": 639.1694027116048,
+  "scale": 1.0354953297686904,
+  "mu": 145.39824972596398,
+  "valid": true,
+  "chi2": 336.1986211673441,
+  "ndf": 383,
+  "n_entries": 482979,
+  "bkg_model": "threshold_pol2",
+  "edm": 1.956618450588773e-05,
+  "posdef": true,
+  "attempts": [
+   {
+    "model": "threshold_pol2",
+    "valid": true,
+    "N": 4100.304918224152,
+    "edm": 1.956618450588773e-05
+   }
+  ]
+ },
+ "0.10|NDS_shape(V MC)": {
+  "N": 4443.207812216795,
+  "N_err": 674.8120478156154,
+  "scale": 1.0226233446455857,
+  "mu": 145.39921939379812,
+  "valid": true,
+  "chi2": 179.35956014305003,
+  "ndf": 188,
+  "n_entries": 482979,
+  "bkg_model": "threshold_pol2",
+  "edm": 1.1880644331774049e-05,
+  "posdef": true,
+  "attempts": [
+   {
+    "model": "threshold_pol2",
+    "valid": true,
+    "N": 4443.207812216795,
+    "edm": 1.1880644331774049e-05
+   }
+  ]
+ },
+ "0.10|PD_shape(pairs MC)": {
+  "N": 4107.105113797894,
+  "N_err": 640.8578126694892,
+  "scale": 1.033662081381432,
+  "mu": 145.3976435351026,
+  "valid": true,
+  "chi2": 179.7357040817831,
+  "ndf": 188,
+  "n_entries": 482979,
+  "bkg_model": "threshold_pol2",
+  "edm": 4.9770732196999056e-05,
+  "posdef": true,
+  "attempts": [
+   {
+    "model": "threshold_pol2",
+    "valid": true,
+    "N": 4107.105113797894,
+    "edm": 4.9770732196999056e-05
+   }
+  ]
+ }
+}

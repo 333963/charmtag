@@ -1,0 +1,88 @@
+## logs/pd
+total 16
+drwxr-xr-x.  2 klyczak zp 2048 Nov  5 22:42 .
+drwxr-xr-x. 18 klyczak zp 2048 Nov  5 22:10 ..
+-rw-r--r--.  1 klyczak zp    0 Nov  5 22:41 diff_fit2d.12194154.err
+-rw-r--r--.  1 klyczak zp 1007 Nov  5 22:41 diff_fit2d.12194154.out
+-rw-r--r--.  1 klyczak zp 7099 Nov  5 22:42 diff.log
+-rw-r--r--.  1 klyczak zp    0 Nov  5 22:38 diff_pairs.12190825.err
+-rw-r--r--.  1 klyczak zp 2178 Nov  5 22:38 diff_pairs.12190825.out
+-rw-r--r--.  1 klyczak zp    0 Nov  5 22:42 diff_report.12194530.err
+-rw-r--r--.  1 klyczak zp  506 Nov  5 22:42 diff_report.12194530.out
+### logs/pd/diff_pairs.12190825.err
+--- tail
+### logs/pd/diff_pairs.12190825.out
+1:[2026-11-05T21:14:09Z] PD pairs host b9p25p9985.cern.ch WD=/pool/condor/dir_1248286/pd_pairs_y4CVQv PD_OUT=/eos/user/k/klyczak/charm_q/pf_pairs/diff VAR=sign
+2:+ charmtag pairs -c /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus/pd_diff/cfg/pd_diff.yaml --unblind --norm direct --diff sign
+3:22:14:16 INFO charmtag pairs unblind=True out=/eos/user/k/klyczak/charm_q/pf_pairs/diff/pairs
+8:22:38:20 WARNING pairs diff D0D0: udziały MC ([nan nan], N=0) nieużyteczne → normalizacja płaska
+9:22:38:20 WARNING pairs diff DpD0: udziały MC ([nan nan], N=0) nieużyteczne → normalizacja płaska
+10:22:38:20 WARNING pairs diff D0D0: udziały MC ([nan nan], N=0) nieużyteczne → normalizacja płaska
+11:22:38:20 WARNING pairs diff DpD0: udziały MC ([nan nan], N=0) nieużyteczne → normalizacja płaska
+12:22:38:20 INFO pairs diff[sign]: biny ['like', 'opposite']; pary danych per bin {'0': 15160, '1': 16646} (nieokreślone 38128); pary MC per bin {'D0D0': [0, 0], 'DpD0': [0, 0], 'DpDp': [3, 12]} (nieokreślone {'D0D0': 22, 'DpD0': 41, 'DpDp': 0})
+--- tail
+[2026-11-05T21:14:09Z] PD pairs host b9p25p9985.cern.ch WD=/pool/condor/dir_1248286/pd_pairs_y4CVQv PD_OUT=/eos/user/k/klyczak/charm_q/pf_pairs/diff VAR=sign
++ charmtag pairs -c /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus/pd_diff/cfg/pd_diff.yaml --unblind --norm direct --diff sign
+22:14:16 INFO charmtag pairs unblind=True out=/eos/user/k/klyczak/charm_q/pf_pairs/diff/pairs
+22:14:20 INFO pairs: progi score (ε_S 30/45/65/90%): D0 {'0.3': 0.9839380383491516, '0.45': 0.9589824676513672, '0.65': 0.8569592237472534, '0.9': 0.38729336857795715}, D+ {'0.3': 0.9949097633361816, '0.45': 0.987583339214325, '0.65': 0.954683244228363, '0.9': 0.5901422500610352}
+22:15:27 INFO pairs: Y (z SF) {'10_0': 0.26747403723834856, '10_1': 0.1331786746848618, '10_2': 0.17707459234416564, '10_3': 0.07086295825141667, '10_4': 0.0317044061524228, '4_0': 0.3, '4_1': 0.15, '4_2': 0.2}; udział swapów {'10_0': 0.393675676049615, '10_1': 0.30641301289688394, '10_2': 0.2693845989064528, '10_3': 0.09248766221897275, '10_4': 0.03339801858849964, '4_0': 0.0, '4_1': 0.0, '4_2': 0.0}
+22:35:42 WARNING pairs: N_D* refit/fit_dm = 0.720 — duża rozbieżność (artefakt σ≤2,5 MeV w fit_dm?)
+22:35:42 INFO pairs: dane 5527477 zdarzeń z kandydatami; N_D* (dstar_refit.fit_single) = 4022 ± 562 (fit_dm: 5584)
+22:38:20 WARNING pairs diff D0D0: udziały MC ([nan nan], N=0) nieużyteczne → normalizacja płaska
+22:38:20 WARNING pairs diff DpD0: udziały MC ([nan nan], N=0) nieużyteczne → normalizacja płaska
+22:38:20 WARNING pairs diff D0D0: udziały MC ([nan nan], N=0) nieużyteczne → normalizacja płaska
+22:38:20 WARNING pairs diff DpD0: udziały MC ([nan nan], N=0) nieużyteczne → normalizacja płaska
+22:38:20 INFO pairs diff[sign]: biny ['like', 'opposite']; pary danych per bin {'0': 15160, '1': 16646} (nieokreślone 38128); pary MC per bin {'D0D0': [0, 0], 'DpD0': [0, 0], 'DpDp': [3, 12]} (nieokreślone {'D0D0': 22, 'DpD0': 41, 'DpDp': 0})
+22:38:21 INFO pairs: region=full, par w histogramach 69934; oczekiwane pary (pełna płaszczyzna przed kat.) {'D0D0': 90.5, 'DpD0': 147.3, 'DpDp': 44.0}
+22:38:21 INFO koniec pairs (1445 s)
+[2026-11-05T21:38:23Z] OK PD pairs
+## v1.2 parts
+data_428770
+DONE
+fd_cd
+fd_dd
+fd_nd
+fd_sd
+mb_cd
+mb_dd
+mb_nd
+mb_sd
+data_428770: 78 plików
+mb_nd: 80 plików
+fd_nd: 24 plików
+## v1.1 parts
+data_428770: 78 plików
+mb_nd: 80 plików
+fd_nd: 24 plików
+## data_428770 v12 files 39 v11 files 39
+keys ['events']
+charge cols ['Dmeson_charge', 'Dmeson_daughter0_charge', 'Dmeson_daughter1_charge', 'Dmeson_daughter2_charge', 'Dmeson_fit_charge'] n 2047701
+  Dmeson_charge decayType=10: {-1: 18765, 1: 18915}
+  Dmeson_charge decayType=4: {-1: 74218, 1: 71833}
+  Dmeson_daughter0_charge decayType=10: {-1: 18915, 1: 18765}
+  Dmeson_daughter0_charge decayType=4: {-1: 71833, 1: 74218}
+  Dmeson_daughter1_charge decayType=10: {-1: 18765, 1: 18915}
+  Dmeson_daughter1_charge decayType=4: {-1: 74218, 1: 71833}
+  Dmeson_daughter2_charge decayType=10: {-999: 37680}
+  Dmeson_daughter2_charge decayType=4: {-1: 74218, 1: 71833}
+  Dmeson_fit_charge decayType=10: {0: 37680}
+  Dmeson_fit_charge decayType=4: {-1: 74218, 1: 71833}
+  rows v11 2047701 v12 2047701 same_first_file True
+  eq run_number True
+  eq event_number True
+## mb_nd v12 files 80 v11 files 80
+keys ['events']
+charge cols ['Dmeson_charge', 'Dmeson_daughter0_charge', 'Dmeson_daughter1_charge', 'Dmeson_daughter2_charge', 'Dmeson_fit_charge'] n 191218
+  Dmeson_charge decayType=10: {-1: 19732, 1: 19574}
+  Dmeson_charge decayType=4: {-1: 70202, 1: 68385}
+  Dmeson_daughter0_charge decayType=10: {-1: 19574, 1: 19732}
+  Dmeson_daughter0_charge decayType=4: {-1: 68385, 1: 70202}
+  Dmeson_daughter1_charge decayType=10: {-1: 19732, 1: 19574}
+  Dmeson_daughter1_charge decayType=4: {-1: 70202, 1: 68385}
+  Dmeson_daughter2_charge decayType=10: {-999: 39306}
+  Dmeson_daughter2_charge decayType=4: {-1: 70202, 1: 68385}
+  Dmeson_fit_charge decayType=10: {0: 39306}
+  Dmeson_fit_charge decayType=4: {-1: 70202, 1: 68385}
+  rows v11 191218 v12 191218 same_first_file True
+  eq run_number True
+  eq event_number True

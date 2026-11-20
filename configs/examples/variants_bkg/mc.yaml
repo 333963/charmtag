@@ -1,0 +1,7 @@
+# S5: tło treningowe = MC minbias ND (incl_mc) truth ≥ 8, cały zakres mas (także pod pikiem)
+training:
+  bkg_source: mc
+  bkg_options:
+    mc_sample: incl_mc
+    mc_region: all
+    mc_truth_min: 8

@@ -1,0 +1,10 @@
+# Pełny bieg na Macu (h5 v1.1, data 428770 joby 25–47 ≈ ½ lumi)
+paths:
+  h5_dir: <KATALOG_H5>/merged-v1.1-Aug7
+  out_dir: <KATALOG_WYJSCIOWY>/v11_full
+io:
+  max_bkg_train: 3000000
+  max_sig_train: 2000000
+training:
+  xgb:
+    n_jobs: 4          # START_charm.command może liczyć równolegle

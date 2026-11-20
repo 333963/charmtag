@@ -1,0 +1,143 @@
+{
+ "charmtag": "/afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus/pf_pairs/src/charmtag/__init__.py",
+ "classes": [
+  "J12only",
+  "MBTS_j20",
+  "MBTS_noj20",
+  "other"
+ ],
+ "n_legs": 523735,
+ "n_trg_events": 7989496,
+ "event_fraction": {
+  "J12only": 0.5489733019454544,
+  "MBTS_j20": 0.15560743756552353,
+  "MBTS_noj20": 0.0133709310324456,
+  "other": 0.2820483294565765
+ },
+ "dstar_fraction": {
+  "J12only": {
+   "r": null,
+   "r_err": null,
+   "N_tot": 0.0,
+   "determined": false,
+   "n_cand": 114839
+  },
+  "MBTS_j20": {
+   "r": null,
+   "r_err": null,
+   "N_tot": 0.0,
+   "determined": false,
+   "n_cand": 18297
+  },
+  "MBTS_noj20": {
+   "r": null,
+   "r_err": null,
+   "N_tot": 0.0,
+   "determined": false,
+   "n_cand": 1448
+  },
+  "other": {
+   "r": null,
+   "r_err": null,
+   "N_tot": 0.0,
+   "determined": false,
+   "n_cand": 9896
+  }
+ },
+ "legs_unmatched": 0,
+ "legs_unmatched_frac": 0.0,
+ "sum_equals_pairs_full": {
+  "D0D0": true,
+  "DpD0": true,
+  "DpDp": true
+ },
+ "pairs_per_class": {
+  "D0D0": {
+   "J12only": 8163,
+   "MBTS_j20": 838,
+   "MBTS_noj20": 47,
+   "other": 379,
+   "bez_klasy": 0
+  },
+  "DpD0": {
+   "J12only": 24594,
+   "MBTS_j20": 2650,
+   "MBTS_noj20": 117,
+   "other": 1340,
+   "bez_klasy": 0
+  },
+  "DpDp": {
+   "J12only": 26984,
+   "MBTS_j20": 3128,
+   "MBTS_noj20": 167,
+   "other": 1527,
+   "bez_klasy": 0
+  }
+ },
+ "events_with_legs_fraction": {
+  "J12only": 0.7756495433370273,
+  "MBTS_j20": 0.13313865852954,
+  "MBTS_noj20": 0.010005094457545312,
+  "other": 0.08120670367588746
+ },
+ "nominal_ok": true,
+ "fits": {
+  "nominal": {
+   "D0D0": {
+    "mu_hat": 1.1583044917964602,
+    "mu_err_hesse": 0.5519857923861287,
+    "Z": 2.24845213301456,
+    "dev_ndf": 0.6936543408705629,
+    "valid": true
+   },
+   "DpD0": {
+    "mu_hat": 1.1647914894924083,
+    "mu_err_hesse": 0.42391654416087343,
+    "Z": 3.011205101168014,
+    "dev_ndf": 0.9635860761385351,
+    "valid": true
+   },
+   "DpDp": {
+    "mu_hat": 1.3855940255320527,
+    "mu_err_hesse": 0.9251674132600782,
+    "Z": 1.5719223528701907,
+    "dev_ndf": 1.074524211720498,
+    "valid": true
+   },
+   "wmean": {
+    "mu": 1.1884235798576799,
+    "err": 0.3159904832374006
+   },
+   "combined": {
+    "mu": 1.1888893184896132,
+    "q0": 16.54457875984326,
+    "Z": 4.067502767035723,
+    "gmin": 0.02462713968384378,
+    "n_eval": 11,
+    "n_invalid_fits": 0,
+    "at_bound": false,
+    "mu_68": [
+     0.8759846798150779,
+     1.5091999841150252
+    ],
+    "sigma_68": 0.31660765214997366
+   }
+  },
+  "J12only": {
+   "skipped": "r_c lub udzia\u0142 zdarze\u0144 = 0"
+  },
+  "MBTS_j20": {
+   "skipped": "r_c lub udzia\u0142 zdarze\u0144 = 0"
+  },
+  "MBTS_noj20": {
+   "skipped": "r_c lub udzia\u0142 zdarze\u0144 = 0"
+  },
+  "other": {
+   "skipped": "r_c lub udzia\u0142 zdarze\u0144 = 0"
+  }
+ },
+ "consistency": {
+  "classes": []
+ },
+ "sec": 392.27185225486755
+}

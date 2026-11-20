@@ -1,0 +1,16 @@
+# Węzeł DAG UBJK (VARS step, chunk, cpus, mem, flavour, penv z ubjk.dag).
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/ub_jk/ubjk_job.sh $(step) $(chunk)
+output     = $(Q)/logs/ubjk/ubjk_$(step)_$(chunk).$(ClusterId).out
+error      = $(Q)/logs/ubjk/ubjk_$(step)_$(chunk).$(ClusterId).err
+log        = $(Q)/logs/ubjk/ubjk.log
+request_cpus   = $(cpus)
+request_memory = $(mem)
+request_disk   = 4GB
++JobFlavour    = "$(flavour)"
+should_transfer_files = NO
+getenv     = False
+environment = "$(penv)"
+queue

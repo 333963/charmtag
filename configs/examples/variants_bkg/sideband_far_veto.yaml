@@ -1,0 +1,6 @@
+# S5: tło treningowe = dalekie sidebandy + weto refleksji K↔π (D0); D⁺: |m−m0|>110 MeV (+ weto D* jak nominalnie)
+training:
+  bkg_source: sideband_far_veto
+  bkg_options:
+    far_min: {D0: 0.100, Dplus: 0.110}
+    refl_veto: 0.025

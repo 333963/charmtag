@@ -1,0 +1,111 @@
+{
+ "dstar_refit_file": "/Users/k/Documents/charm/charm_work/AA_merge/src/charmtag/dstar_refit.py",
+ "0.05|NDS_shape(V MC)": {
+  "N": 4436.337253987443,
+  "N_err": 595.1842205817086,
+  "scale": 1.0254275099269214,
+  "mu": 145.3976078329036,
+  "valid": true,
+  "chi2": 335.81063362752184,
+  "ndf": 383,
+  "n_entries": 482979,
+  "bkg_model": "threshold_pol2",
+  "edm": 0.0005017995959764592,
+  "posdef": true,
+  "attempts": [
+   {
+    "model": "threshold_pol2",
+    "valid": true,
+    "N": 4436.337253987443,
+    "edm": 0.0005017995959764592
+   }
+  ]
+ },
+ "0.05|PD_shape(pairs MC)": {
+  "N": 4097.410265884354,
+  "N_err": 674.3579707724771,
+  "scale": 1.035448877821653,
+  "mu": 145.39682407575066,
+  "valid": true,
+  "chi2": 336.1950522057326,
+  "ndf": 382,
+  "n_entries": 482979,
+  "bkg_model": "expo_pol2_s1",
+  "edm": 0.00043743270664634416,
+  "posdef": true,
+  "attempts": [
+   {
+    "model": "threshold_pol2",
+    "valid": false,
+    "N": 4127.658950418616,
+    "edm": 0.001619332844974127
+   },
+   {
+    "model": "expo_pol2",
+    "valid": false,
+    "N": 4094.686146994885,
+    "edm": 0.0013821912129070816
+   },
+   {
+    "model": "expo_pol2_s1",
+    "valid": true,
+    "N": 4097.410265884354,
+    "edm": 0.00043743270664634416
+   }
+  ]
+ },
+ "0.10|NDS_shape(V MC)": {
+  "N": 4457.639412684675,
+  "N_err": 680.1825948912726,
+  "scale": 1.0244603212431491,
+  "mu": 145.39916028595187,
+  "valid": true,
+  "chi2": 179.3615806918753,
+  "ndf": 188,
+  "n_entries": 482979,
+  "bkg_model": "threshold_pol2",
+  "edm": 0.00047449283607834395,
+  "posdef": true,
+  "attempts": [
+   {
+    "model": "threshold_pol2",
+    "valid": true,
+    "N": 4457.639412684675,
+    "edm": 0.00047449283607834395
+   }
+  ]
+ },
+ "0.10|PD_shape(pairs MC)": {
+  "N": 4081.3346818055697,
+  "N_err": 517.9391397055617,
+  "scale": 1.0315217764233213,
+  "mu": 145.40423306046554,
+  "valid": true,
+  "chi2": 179.86307785281895,
+  "ndf": 187,
+  "n_entries": 482979,
+  "bkg_model": "expo_pol2_s1",
+  "edm": 0.0009168226536356197,
+  "posdef": false,
+  "attempts": [
+   {
+    "model": "threshold_pol2",
+    "valid": false,
+    "N": 4132.380224897497,
+    "edm": 0.0019671086084532222
+   },
+   {
+    "model": "expo_pol2",
+    "valid": false,
+    "N": 4094.3132365306474,
+    "edm": 0.001529410601062266
+   },
+   {
+    "model": "expo_pol2_s1",
+    "valid": true,
+    "N": 4081.3346818055697,
+    "edm": 0.0009168226536356197
+   }
+  ]
+ }
+}

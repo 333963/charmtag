@@ -1,0 +1,7 @@
+# S5: tło treningowe = syntetyczne (kopuła Gaussa p(x|m) z SB danych z wetem refleksji) w |m−m0| < sideband_min
+training:
+  bkg_source: synthetic
+  bkg_options:
+    synthetic_model: copula   # flow → wymaga charmtag.bkggen.gen (S/S2) + zuko
+    synthetic_factor: 1.0
+    synthetic_veto: true

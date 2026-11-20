@@ -1,0 +1,14 @@
+{
+ "finished_utc": "2026-11-19T03:52:21Z",
+ "gn_out": "/eos/user/k/klyczak/charm_q/gen_norm_v20",
+ "base_cfg": "/afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus/config/lxplus_v11.yaml",
+ "nominal": "/eos/user/k/klyczak/charm_q/runs/lxplus_v11",
+ "data_ref_tags": "",
+ "gn_fmt": "v20",
+ "ptprod": "dpt3to150",
+ "raw": "/eos/user/k/klyczak/charm_raw_v20",
+ "ref_anchors": "/eos/user/k/klyczak/charm_h5_v11/parts/data_428770/data_428770_000021_none.h5,/eos/user/k/klyczak/charm_h5_v11/parts/data_428770/data_428770_000030_none.h5",
+ "mb_exclude": "000037,000070",
+ "max_events": null,
+ "src_snapshot": "snapshot charmtag, 2026-11-16T14:56:23Z\ncharmtag 2.1.0 z 15.11.2026 (projekt B przeniesiony do repo charmbkg, charmbkg 1.0.0)\nzmiany lokalne względem 2.1.0 (wchodzą do snapshotu):\n M charmtag/pairs/build.py\n M tests/test_pairs.py\nmd5 pairs/build.py: 288f22b51b90dad0a775678f6850fc60\n"
+}

@@ -1,0 +1,230 @@
+{
+ "test": "odtworzenie c_w z mb_rates_2d.json (etap1, 09-26) \u2014 wymagane przed u\u017cyciem w2d.npy",
+ "tolerance_cw_abs": 0.005,
+ "verdict": "PASS",
+ "checks": {
+  "B1b_anchors_found": {
+   "got": 303497,
+   "ref": 303497,
+   "pass": true
+  },
+  "B1b_ref_events": {
+   "got": 441690,
+   "ref": 441691,
+   "tol": 10,
+   "pass": true
+  },
+  "B1a78_Dplus_n": {
+   "got": 8466,
+   "ref": 8466,
+   "ref_how": "etap1 8671 \u2212 nogi h5 wykluczonych tag\u00f3w 205",
+   "tol": 6,
+   "pass": true
+  },
+  "B1a78_pairs_DpDp_n": {
+   "got": 15,
+   "ref": 15,
+   "ref_how": "etap1 15 \u2212 nogi h5 wykluczonych tag\u00f3w 0",
+   "tol": 1,
+   "pass": true
+  },
+  "B1b78_Dplus_correct_per_event_unw": {
+   "got": 0.00044045607233676775,
+   "ref": 0.00044045607233676775,
+   "ref_how": "etap1 bez wk\u0142adu wykluczonych (x = 205, n = 8671, n_eff = 1159.4)",
+   "rel_diff": 0.0,
+   "tol": 0.0007087172218284905,
+   "pass": true
+  },
+  "B1b78_Dplus_correct_per_event_w": {
+   "got": 0.0023675488773733377,
+   "ref": 0.002364942112243901,
+   "ref_how": "etap1 bez wk\u0142adu wykluczonych (x = 205, n = 8671, n_eff = 1159.4)",
+   "rel_diff": 0.001102253250065181,
+   "tol": 0.01658391358177766,
+   "pass": true
+  },
+  "B1b78_pairs_DpDp_per_event_unw": {
+   "got": 7.803970098100066e-07,
+   "ref": 7.803970098100066e-07,
+   "ref_how": "etap1 bez wk\u0142adu wykluczonych (x = 0, n = 15, n_eff = 7.5)",
+   "rel_diff": 0.0,
+   "tol": 0.06666666666666667,
+   "pass": true
+  },
+  "B1b78_pairs_DpDp_per_event_w": {
+   "got": 5.179821073397761e-06,
+   "ref": 5.183453531917546e-06,
+   "ref_how": "etap1 bez wk\u0142adu wykluczonych (x = 0, n = 15, n_eff = 7.5)",
+   "rel_diff": 0.0007007796052221181,
+   "tol": 0.06866666666666667,
+   "pass": true
+  },
+  "B1a_legs_without_event": {
+   "got": 0,
+   "ref": 0,
+   "pass": true
+  },
+  "B1a_dstar_without_event": {
+   "got": 0,
+   "ref": 0,
+   "pass": true
+  },
+  "B1a_event_key_duplicates": {
+   "got": 0,
+   "ref": 0,
+   "pass": true
+  },
+  "B1a_retag_bijective": {
+   "got": {
+    "000003": "000009",
+    "000004": "000010",
+    "000005": "000003",
+    "000006": "000004",
+    "000007": "000005",
+    "000008": "000006",
+    "000009": "000007",
+    "000010": "000008"
+   },
+   "pass": true
+  }
+ },
+ "c_w_alldata": {
+  "D0": 0.9181880843408474,
+  "Dplus": 0.8584562756680953,
+  "D0D0": 1.4015512868482964,
+  "DpD0": 1.6699963369109545,
+  "DpDp": 1.074086711767962
+ },
+ "fmt": "v20",
+ "info_nonblocking": {
+  "c_w_D0": {
+   "got": 0.9179395519750756,
+   "ref": 0.9347595793543152,
+   "abs_diff": 0.0168200273792396,
+   "pass": false,
+   "blocking": false
+  },
+  "c_w_Dplus": {
+   "got": 0.8572426944652841,
+   "ref": 0.7929922778679358,
+   "abs_diff": 0.06425041659734831,
+   "pass": false,
+   "blocking": false
+  },
+  "c_w_D0D0": {
+   "got": 1.40090383169587,
+   "ref": 1.3742684606473616,
+   "abs_diff": 0.026635371048508327,
+   "pass": false,
+   "blocking": false
+  },
+  "c_w_DpD0": {
+   "got": 1.6772008215094143,
+   "ref": 1.2008659762436482,
+   "abs_diff": 0.4763348452657661,
+   "pass": false,
+   "blocking": false
+  },
+  "c_w_DpDp": {
+   "got": 1.0585383634053662,
+   "ref": 0.980967587786331,
+   "abs_diff": 0.07757077561903525,
+   "pass": false,
+   "blocking": false
+  },
+  "count_dstar_n": {
+   "got": 1746,
+   "ref": 1314,
+   "pass": false,
+   "blocking": false
+  },
+  "count_D0_n": {
+   "got": 12777,
+   "ref": 9448,
+   "pass": false,
+   "blocking": false
+  },
+  "count_pairs_D0D0_n": {
+   "got": 40,
+   "ref": 21,
+   "pass": false,
+   "blocking": false
+  },
+  "count_pairs_DpD0_n": {
+   "got": 55,
+   "ref": 41,
+   "pass": false,
+   "blocking": false
+  },
+  "exclusion_78": {
+   "excluded_tags": [
+    "000037",
+    "000070"
+   ],
+   "file_fraction": 0.025,
+   "legs_excluded": 435,
+   "legs_excluded_frac": 0.023902412220451672,
+   "dstar_excluded": 32,
+   "Dplus_legs_excluded": 205,
+   "DpDp_pairs_excluded": 0,
+   "events_78": 19220986,
+   "events_implied_excluded": 493189,
+   "events_implied_per_excluded_file": 246594.5,
+   "events_per_file_min_max": [
+    236694,
+    246675
+   ],
+   "events_implied_in_file_range": true
+  },
+  "count_events": {
+   "got": 19220986,
+   "ref": 19714175,
+   "pass": false,
+   "blocking": false,
+   "note": "80 plik\u00f3w; przy wykluczeniu zob. exclusion_78"
+  },
+  "count_Dplus_n": {
+   "got": 8466,
+   "ref": 8671,
+   "pass": false,
+   "blocking": false
+  },
+  "count_pairs_DpDp_n": {
+   "got": 15,
+   "ref": 15,
+   "pass": true,
+   "blocking": false
+  },
+  "B1b_Dplus_correct_per_event_unw_strict": {
+   "got": 0.00044045607233676775,
+   "ref": 0.00043983580342570766,
+   "rel_diff": 0.0014102283311841837,
+   "pass": false,
+   "blocking": false
+  },
+  "B1b_Dplus_correct_per_event_w_strict": {
+   "got": 0.0023675488773733377,
+   "ref": 0.002361616585403681,
+   "rel_diff": 0.0025119623593102916,
+   "pass": false,
+   "blocking": false
+  },
+  "B1b_pairs_DpDp_per_event_unw_strict": {
+   "got": 7.803970098100066e-07,
+   "ref": 7.608738382407583e-07,
+   "rel_diff": 0.025658881391412442,
+   "pass": false,
+   "blocking": false
+  },
+  "B1b_pairs_DpDp_per_event_w_strict": {
+   "got": 5.179821073397761e-06,
+   "ref": 5.053789664088981e-06,
+   "rel_diff": 0.024938000527471294,
+   "pass": false,
+   "blocking": false
+  }
+ },
+ "expected_cw": "D0 0,935 / D+ 0,793 / D0D0 1,374 / DpD0 1,201 / DpDp 0,981",
+ "variant": "\u00a73b: mb_nd bez plik\u00f3w ['000037', '000070']"
+}

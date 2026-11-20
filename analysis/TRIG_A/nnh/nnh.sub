@@ -1,0 +1,18 @@
+# nnh: jeden job, 8 rdzeni (trening sieci + XGB OOF, fity pass/fail)
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/nnh/nnh_job.sh
+environment = "NNH_NPROC=8"
+output     = $(Q)/logs/nnh/nnh.$(ClusterId).out
+error      = $(Q)/logs/nnh/nnh.$(ClusterId).err
+log        = $(Q)/logs/nnh/nnh.log
+request_cpus   = 8
+request_memory = 16GB
+request_disk   = 4GB
++JobFlavour    = "workday"
+batch_name     = charm_nnh
+should_transfer_files = NO
+getenv     = False
+max_retries = 1
+queue

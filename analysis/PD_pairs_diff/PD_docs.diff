@@ -1,0 +1,28 @@
+--- /tmp/docs_orig/double_charm.md	2026-11-05 20:13:21.039518197 +0000
++++ docs/double_charm.md	2026-11-05 20:12:58.050490223 +0000
+@@ -112,6 +112,25 @@
+ - `dedup` (`io.dedup: report|true`): klucz (run, event, decayType, bity kinematyki córek); v1.1 czyste, włączyć przy innych produkcjach (v9 miało 10,8 % kopii D⁰ z finderu D*) *[DD]*.
+ - `pairs_counts.json`: liczba par przed wetem / ze wspólnym śladem / zachowanych — kontrola, że weto działa.
+ 
++### 2.11 Pary różniczkowe — LS/OS, Δφ, Δy (`pairs/diff`) *[PD]* — rozszerzenie, domyślnie wyłączone
++
++Cel: rozróżnić DPS (dwa niezależne twarde procesy) od SPS (jeden proces, np. g → cc̄) na odsłoniętej próbce (~220 par sygnału).
++Jedyna rozstrzygająca obserwabla przy tej statystyce to **podział like-sign / opposite-sign** (znak kwarku c obu nóg: SPS daje tylko OS,
++DPS 1:1; LHCb LS/OS ≈ 0,10–0,13) *[INT]*; Δφ w 2 binach (< π/2, ≥ π/2) daje < 1σ i ma sens tylko wewnątrz OS (`sign_dphi`).
++- Znak nogi: D⁺ → `Dmeson_charge` (jest w v1.1); D0 → −ładunek K (córka 0) — kolumna `Dmeson_daughter0_charge` tylko w v1.2:
++  `pairs.diff.charge_source` (h5 v1.2 — te same 60 kolumn i wiersze; join po `row` z kontrolą run/event/decayType/masy). Bez v1.2
++  nogi D0 są „nieokreślone" → LS/OS tylko dla D⁺D⁺. Swap K↔π odwraca znak, więc ładunek K bierzemy z hipotezy bliższej m0 spośród
++  rzędów tej samej pary torów (`d0_flavour: closest_mass`; tylko do klasyfikacji — arbitraż, masa i kategoria bez zmian; tak samo w MC).
++- Budowa: te same nogi i pary, maska binu PO wecie śladów; histogramy `(n_cat, 25, 25)` per kanał × bin (`pairs_full_diff.npz`),
++  SB×SB per bin, oczekiwanie per bin `N_par · f_i` (f_i = udział binu w parach MC minbias Pythii; fallback płasko), `pair_inputs_diff.json`.
++- Fit: ten sam model 2D per bin (μ_i, Z_i, 68 %), łączenie po kanałach per bin (suma profili), testy kształtu z profili:
++  Δχ² = 2·min_μ Σ ΔNLL_i(μ·h_i/f_i) − Σ 2·ΔNLL_i(min) ~ χ²(n_bin−1) dla h = Pythia (`pythia_mc`) i czysty DPS (`dps_flat`: 1:1 / płasko w Δφ);
++  blok like-sign: f_LS = N_LS/(N_LS+N_OS) ± vs Pythia (± binomialnie z N par MC) i LHCb → `fit2d_diff.json`, `tfin_diff.md`.
++- Uruchomienie: `charmtag pairs -c CFG --unblind --diff [sign|dphi|dy|sign_dphi]` → `charmtag fit2d -c CFG --unblind --diff`
++  (`--diff` wymaga `--unblind`; nominalne wyjścia bez `--diff` bitowo bez zmian — test z hashem). lxplus: `pkg/pd_diff` (DAG 3 węzły).
++- Oczekiwana czułość (z σ_μ odsłoniętego fitu): v1.1 (tylko D⁺D⁺) σ(f_LS) ≈ 0,4 → ~1σ; v1.2 (3 kanały) σ(f_LS) ≈ 0,13 → DPS (0,5) vs
++  SPS-like (0,1) ≈ 3σ; Δφ 2 biny: σ(f_away) ≈ 0,13 → Pythia 0,6 vs DPS 0,5 < 1σ. Notatka: `PD_pairs_diff/charm-PD-pairs-diff.md`.
++
+ ---
+ 
+ ## 3. Jak uruchomić

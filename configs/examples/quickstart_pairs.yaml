@@ -1,0 +1,3 @@
+# Nakładka dla examples/quickstart_double_charm.sh: normalizacja par z przykładowego pliku tempa MC (ścieżka względem tego pliku).
+pairs:
+  mb_rates_json: mb_rates_2d.example.json

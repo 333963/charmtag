@@ -1,0 +1,9 @@
+paths:
+  h5_dir: ../../../h5_v11/merged-v1.1-Aug7
+  out_dir: ../runs/smoke_vm
+io:
+  max_rows: 1500000
+  chunk_rows: 500000
+  max_bkg_train: 300000
+training:
+  xgb: {n_estimators: 300, n_jobs: 4}

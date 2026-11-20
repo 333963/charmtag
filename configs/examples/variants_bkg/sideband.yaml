@@ -1,0 +1,3 @@
+# S5: wariant nominalny (= domyślne charmtag, jawnie). Nakładka na config bazowy (lxplus_v11 / mac_v11).
+training:
+  bkg_source: sideband

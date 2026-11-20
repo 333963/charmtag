@@ -1,0 +1,23 @@
+paths:
+  h5_dir: /eos/user/k/klyczak/charm_h5_v11/parts
+  out_dir: /pool/condor/dir_300261/u4_pairs_NgLfvN/run
+  samples:
+    signal_mc: fd_nd/fd_nd_*_none.h5
+    incl_mc: mb_nd/mb_nd_*_none.h5
+    data_none: /eos/user/k/klyczak/charm_q/ub_427929/h5/data_427929_*_mb.h5
+    data_tag: data_428770/data_428770_*_single_tag.h5
+  sample_info: {}
+  models_dir: /eos/user/k/klyczak/charm_q/runs/lxplus_v11/models
+  scores_dir: /pool/condor/dir_300261/u4_pairs_NgLfvN/scores
+io:
+  chunk_rows: 2000000
+  max_bkg_train: 3000000
+  max_sig_train: 2000000
+training:
+  xgb:
+    n_jobs: 8
+pairs:
+  lumi_fraction: 1.0
+  mb_rates_json: /pool/condor/dir_300261/u4_pairs_NgLfvN/mb_rates_427929.json
+  freeze_dir: /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus/inputs
+  track_id: d0z0

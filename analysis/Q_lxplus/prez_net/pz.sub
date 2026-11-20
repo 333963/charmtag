@@ -1,0 +1,17 @@
+# Węzeł DAG PREZ-2 (VARS step, sp, x, cpus, mem, flavour, penv).
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/prez_net/pz_job.sh $(step) $(sp) $(x)
+output     = $(Q)/logs/preznet/pz_$(step)_$(sp)_$(x).$(ClusterId).out
+error      = $(Q)/logs/preznet/pz_$(step)_$(sp)_$(x).$(ClusterId).err
+log        = $(Q)/logs/preznet/pz.log
+request_cpus   = $(cpus)
+request_memory = $(mem)
+request_disk   = 20GB
++JobFlavour    = "$(flavour)"
++JobBatchName  = "charm_preznet"
+should_transfer_files = NO
+getenv     = False
+environment = "$(penv)"
+queue

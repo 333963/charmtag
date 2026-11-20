@@ -1,0 +1,109 @@
+diff --git a/charmtag/dstar_refit.py b/charmtag/dstar_refit.py
+index 09faf64..d78a0ad 100644
+--- a/charmtag/dstar_refit.py
++++ b/charmtag/dstar_refit.py
+@@ -100,29 +100,72 @@ def sb_count(hp, hf, edges, mu=145.43, half=1.0, sb=(150.0, 158.0), fit_lo=MPI +
+     out["eps"] = out["pass"] / t if t > 0 else float("nan")
+     return out
+ 
+-def fit_single(h, edges, shape):
+-    """Jedna próbka (np. N_D* do normalizacji par): 2 Gaussy (kształt MC, skala wolna) + tło jak w fit_passfail."""
++_GL_X, _GL_W = np.polynomial.legendre.leggauss(6)
++
++
++def _bkg_cdf_t(xe, a, b, c1, c2, expo=True):
++    """Tło dla fit_single (NDS): u^a·e^{−bu}·(1 + c1·t + c2·t²), t = u/20 MeV → współczynniki O(1) (lepsze uwarunkowanie Hesse).
++    Całki po binach kwadraturą Gaussa–Legendre'a (6 węzłów/bin; na [m_π+0,9; 160] całka jest gładka) — NLL gładkie
++    do precyzji maszynowej, więc Migrad osiąga EDM < 1e-4 (siatka + np.interp w `_bkg_cdf` dawała EDM ~1e-3 → valid=False).
++    expo=False: b≡0 (model „próg × pol2”, zagnieżdżony w pełnym). Zwraca CDF na krawędziach (0 … 1)."""
++    xe = np.asarray(xe, float); lo, hi = xe[:-1], xe[1:]
++    x = 0.5 * (hi + lo)[:, None] + 0.5 * (hi - lo)[:, None] * _GL_X[None, :]
++    u = np.clip(x - MPI, 1e-9, None); t = u / 20.0
++    fb = u ** a * (1 + c1 * t + c2 * t * t)
++    if expo:
++        fb = fb * np.exp(-b * u)
++    fb = np.clip(fb, 1e-12, None)
++    ib = 0.5 * (hi - lo) * (fb * _GL_W[None, :]).sum(1)
++    cb = np.concatenate([[0.0], np.cumsum(ib)])
++    return cb / cb[-1]
++
++
++# Kolejność prób fit_single (NDS, G9): nominał „próg × pol2” (u^a(1+c1t+c2t²)) → pełny model z wykładnikiem → pełny, strategia 1.
++# Pełny model (u^a e^{-bu} × pol2, nominał V) ma na 20 MeV zakresu płaski kierunek b ↔ (c1, c2): Migrad znajduje minimum
++# (N stabilne), ale EDM nie spada poniżej progu / Hesse niedodatnio określona → valid=False na pełnej lumi (S/B ≈ 1 %).
++# Model bez wykładnika jest w nim zagnieżdżony (b=0), daje ten sam χ² i N (NDS: 4443 vs 4437, Δχ² < 0,1) i zbiega → nominał.
++# Czysty wykładnik (bez pol2) jest za sztywny: zawyża σ (×1,17) i N (+25 %) — ten sam artefakt co w massfit.fit_dm → nie w kolejce.
++FIT_SINGLE_ATTEMPTS = (("threshold_pol2", False, 2), ("expo_pol2", True, 2), ("expo_pol2_s1", True, 1))
++
++
++def fit_single(h, edges, shape, attempts=FIT_SINGLE_ATTEMPTS):
++    """Jedna próbka (np. N_D* do normalizacji par): 2 Gaussy (kształt MC, skala wolna) + tło u^a(1+c1t+c2t²)[·e^{-bu}], t=u/20 MeV.
++    Odporność (NDS): simplex→migrad (strategy 2)→hesse; gdy fit niepoprawny — kolejny model z `attempts` (zob. FIT_SINGLE_ATTEMPTS).
++    Zwraca N, N_err, scale, mu, valid, chi2, ndf, n_entries + bkg_model (użyty model), edm, posdef, attempts (lista prób)."""
+     h, e = _rebin(h, edges)
+     def cdf_s(xe, mu, s):
+         c = _sig_cdf(xe, mu, shape["sc"] * s, shape["k"], shape["f"]); return (c - c[0]) / (c[-1] - c[0])
+-    def nll(N, mu, s, nb, a, b, c1, c2):
+-        lam = np.clip(np.diff(N * cdf_s(e, mu, s) + nb * _bkg_cdf(e, a, b, c1, c2)), 1e-9, None)
+-        return float(np.sum(lam - h * np.log(lam)))
+-    best = None
+-    for b0 in (0.05, 0.15, 0.4):
+-        m = Minuit(nll, N=max(0.01 * h.sum(), 50), mu=shape["mu"], s=1.0, nb=h.sum(), a=0.5, b=b0, c1=0.0, c2=0.0)
+-        m.errordef = 0.5
+-        m.limits["N"] = (0, None); m.limits["s"] = (0.8, 1.6); m.limits["mu"] = (shape["mu"] - 0.5, shape["mu"] + 0.5)
+-        m.limits["a"] = (0.01, 3); m.limits["b"] = (-1, 3); m.limits["c1"] = (-0.5, 2); m.limits["c2"] = (-0.05, 0.2); m.limits["nb"] = (0, None)
+-        m.migrad(ncall=20000); m.hesse()
+-        if best is None or (m.valid and m.fval < best.fval) or (not best.valid and m.valid):
+-            best = m
+-        if best.valid:
++    def run(expo, strategy):
++        def nll(N, mu, s, nb, a, b, c1, c2):
++            lam = np.clip(np.diff(N * cdf_s(e, mu, s) + nb * _bkg_cdf_t(e, a, b, c1, c2, expo)), 1e-9, None)
++            return float(np.sum(lam - h * np.log(lam)))
++        best = None
++        for a0, b0 in ((0.5, 0.03), (0.6, 0.1), (0.4, 0.0)):
++            m = Minuit(nll, N=max(0.01 * h.sum(), 50), mu=shape["mu"], s=1.0, nb=h.sum(), a=a0, b=b0 if expo else 0.0, c1=0.0, c2=0.0)
++            m.errordef = 0.5; m.strategy = strategy
++            m.limits["N"] = (0, None); m.limits["s"] = (0.8, 1.6); m.limits["mu"] = (shape["mu"] - 0.5, shape["mu"] + 0.5)
++            m.limits["a"] = (0.01, 3); m.limits["b"] = (-0.5, 1.5); m.limits["c1"] = (-5, 20); m.limits["c2"] = (-10, 40); m.limits["nb"] = (0, None)
++            if not expo:
++                m.fixed["b"] = True
++            m.simplex(); m.migrad(ncall=50000); m.hesse()
++            if best is None or (m.valid and (not best.valid or m.fval < best.fval)):
++                best = m
++            if best.valid:
++                break
++        return best
++    log_att, m, used = [], None, None
++    for name, expo, strategy in attempts:
++        mm = run(expo, strategy)
++        log_att.append({"model": name, "valid": bool(mm.valid), "N": float(mm.values["N"]), "edm": float(mm.fmin.edm)})
++        if m is None or (mm.valid and not m.valid):
++            m, used = mm, (name, expo)
++        if m.valid:
+             break
+-    m = best; v = {k: float(m.values[k]) for k in m.parameters}
+-    lam = np.diff(v["N"] * cdf_s(e, v["mu"], v["s"]) + v["nb"] * _bkg_cdf(e, v["a"], v["b"], v["c1"], v["c2"]))
++    v = {k: float(m.values[k]) for k in m.parameters}
++    lam = np.diff(v["N"] * cdf_s(e, v["mu"], v["s"]) + v["nb"] * _bkg_cdf_t(e, v["a"], v["b"], v["c1"], v["c2"], used[1]))
+     return {"N": v["N"], "N_err": float(m.errors["N"]), "scale": v["s"], "mu": v["mu"], "valid": bool(m.valid),
+-            "chi2": float(np.sum((h - lam) ** 2 / np.maximum(lam, 1))), "ndf": int(len(h) - m.nfit), "n_entries": int(h.sum())}
++            "chi2": float(np.sum((h - lam) ** 2 / np.maximum(lam, 1))), "ndf": int(len(h) - m.nfit), "n_entries": int(h.sum()),
++            "bkg_model": used[0], "edm": float(m.fmin.edm), "posdef": bool(m.fmin.has_posdef_covar), "attempts": log_att}
+ 
+ def old_fit(h, edges, **kw):
+     """Odtworzenie starej metody (massfit.fit_dm, Gauss σ≤2,5 MeV + próg 2-parametrowy) z histogramu [MeV]."""
+diff --git a/charmtag/pairs/build.py b/charmtag/pairs/build.py
+index 73d69a3..7189180 100644
+--- a/charmtag/pairs/build.py
++++ b/charmtag/pairs/build.py
+@@ -242,7 +242,8 @@ def sf_cat(p, dt, c):
+ # ----------------------------------------------------------------------------- normalizacja
+ def n_dstar_data(D, p, D_mc=None):
+     """N_D* w danych do normalizacji par. Nominał: `dstar_refit.fit_single` (2 Gaussy z kształtem z MC truth D*, skala σ wolna ≥0,8,
+-    tło (u)^a e^{-bu}(1+c1u+c2u²), zakres [m_π+0,9; 160] MeV) — odporny na artefakt limitu σ≤2,5 MeV starego `massfit.fit_dm` (V).
++    tło u^a(1+c1t+c2t²) [NDS; pełny model z e^{-bu} jako kolejna próba], zakres [m_π+0,9; 160] MeV) — odporny na artefakt
++    limitu σ≤2,5 MeV starego `massfit.fit_dm` (V).
+     Zwraca dict z N/N_err nominału + `old` (fit_dm, do porównania) + `method`. Fallback na fit_dm tylko gdy refit niepoprawny."""
+     from ..massfit import fit_dm
+     w = p["dstar_norm"]["d0_window"]

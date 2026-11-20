@@ -1,0 +1,555 @@
+{
+ "wp_thresholds": {
+  "D0": {
+   "0.8": [
+    0.638240396976471,
+    0.694586455821991,
+    0.6780310273170471
+   ],
+   "0.7": [
+    0.7912750244140625,
+    0.8353264331817627,
+    0.8220744729042053
+   ],
+   "0.5": [
+    0.9375302791595459,
+    0.9541957974433899,
+    0.9415997266769409
+   ]
+  },
+  "Dplus": {
+   "0.8": [
+    0.8414435386657715,
+    0.8694400191307068,
+    0.8243255019187927
+   ],
+   "0.7": [
+    0.9318762421607971,
+    0.9431525468826294,
+    0.9207379221916199
+   ],
+   "0.5": [
+    0.9833312034606934,
+    0.9846196174621582,
+    0.9780988693237305
+   ]
+  }
+ },
+ "comp_D0_incl_mc": {
+  "Signal (prompt c + from b)": {
+   "all": 9534,
+   "window": 8825
+  },
+  "Reflection $K\\leftrightarrow\\pi$": {
+   "all": 4649,
+   "window": 2142
+  },
+  "Other charm / other decay mode": {
+   "all": 12199,
+   "window": 4951
+  },
+  "Partially reco (\u22651 daughter from c/b)": {
+   "all": 170113,
+   "window": 75380
+  },
+  "Combinatorial": {
+   "all": 2988099,
+   "window": 1323915
+  }
+ },
+ "comp_D0_signal_mc": {
+  "Signal (prompt c + from b)": {
+   "all": 216175,
+   "window": 200101
+  },
+  "Reflection $K\\leftrightarrow\\pi$": {
+   "all": 105203,
+   "window": 49114
+  },
+  "Other charm / other decay mode": {
+   "all": 21507,
+   "window": 9044
+  },
+  "Partially reco (\u22651 daughter from c/b)": {
+   "all": 408166,
+   "window": 180694
+  },
+  "Combinatorial": {
+   "all": 867989,
+   "window": 384999
+  }
+ },
+ "score_D0": {
+  "eff_S_good": 0.6999976870590956,
+  "eff_B_good": 0.04023295402394201,
+  "rejection": 24.855246756301202
+ },
+ "comp_good_D0_incl_mc": {
+  "Signal (prompt c + from b)": {
+   "all": 6610,
+   "window": 6187
+  },
+  "Reflection $K\\leftrightarrow\\pi$": {
+   "all": 3983,
+   "window": 1883
+  },
+  "Other charm / other decay mode": {
+   "all": 4323,
+   "window": 1495
+  },
+  "Partially reco (\u22651 daughter from c/b)": {
+   "all": 14940,
+   "window": 6558
+  },
+  "Combinatorial": {
+   "all": 108292,
+   "window": 47880
+  }
+ },
+ "comp_bad_D0_incl_mc": {
+  "Signal (prompt c + from b)": {
+   "all": 2924,
+   "window": 2638
+  },
+  "Reflection $K\\leftrightarrow\\pi$": {
+   "all": 666,
+   "window": 259
+  },
+  "Other charm / other decay mode": {
+   "all": 7876,
+   "window": 3456
+  },
+  "Partially reco (\u22651 daughter from c/b)": {
+   "all": 155173,
+   "window": 68822
+  },
+  "Combinatorial": {
+   "all": 2879807,
+   "window": 1276035
+  }
+ },
+ "comp_good_D0_signal_mc": {
+  "Signal (prompt c + from b)": {
+   "all": 151322,
+   "window": 141293
+  },
+  "Reflection $K\\leftrightarrow\\pi$": {
+   "all": 90370,
+   "window": 43522
+  },
+  "Other charm / other decay mode": {
+   "all": 9986,
+   "window": 4038
+  },
+  "Partially reco (\u22651 daughter from c/b)": {
+   "all": 37776,
+   "window": 17032
+  },
+  "Combinatorial": {
+   "all": 33195,
+   "window": 14779
+  }
+ },
+ "comp_bad_D0_signal_mc": {
+  "Signal (prompt c + from b)": {
+   "all": 64853,
+   "window": 58808
+  },
+  "Reflection $K\\leftrightarrow\\pi$": {
+   "all": 14833,
+   "window": 5592
+  },
+  "Other charm / other decay mode": {
+   "all": 11521,
+   "window": 5006
+  },
+  "Partially reco (\u22651 daughter from c/b)": {
+   "all": 370390,
+   "window": 163662
+  },
+  "Combinatorial": {
+   "all": 834794,
+   "window": 370220
+  }
+ },
+ "data_D0": {
+  "n_all": 8582589,
+  "n_good": 272011,
+  "n_bad": 8310578,
+  "good_window_over_sb_scaled": 1.3699910048457764,
+  "bad_window_over_sb_scaled": 1.03300633920034
+ },
+ "comp_Dplus_incl_mc": {
+  "Signal (prompt c + from b)": {
+   "all": 8665,
+   "window": 7912
+  },
+  "Reflection $K\\leftrightarrow\\pi$": {
+   "all": 0,
+   "window": 0
+  },
+  "Other charm / other decay mode": {
+   "all": 12538,
+   "window": 2634
+  },
+  "Partially reco (\u22651 daughter from c/b)": {
+   "all": 937425,
+   "window": 167762
+  },
+  "Combinatorial": {
+   "all": 9896328,
+   "window": 1740247
+  }
+ },
+ "comp_Dplus_signal_mc": {
+  "Signal (prompt c + from b)": {
+   "all": 148440,
+   "window": 135929
+  },
+  "Reflection $K\\leftrightarrow\\pi$": {
+   "all": 0,
+   "window": 0
+  },
+  "Other charm / other decay mode": {
+   "all": 2304,
+   "window": 610
+  },
+  "Partially reco (\u22651 daughter from c/b)": {
+   "all": 1894365,
+   "window": 319212
+  },
+  "Combinatorial": {
+   "all": 3079192,
+   "window": 539125
+  }
+ },
+ "score_Dplus": {
+  "eff_S_good": 0.6999932632713555,
+  "eff_B_good": 0.009444887657909972,
+  "rejection": 105.87738427598055
+ },
+ "comp_good_Dplus_incl_mc": {
+  "Signal (prompt c + from b)": {
+   "all": 6100,
+   "window": 5600
+  },
+  "Reflection $K\\leftrightarrow\\pi$": {
+   "all": 0,
+   "window": 0
+  },
+  "Other charm / other decay mode": {
+   "all": 3195,
+   "window": 618
+  },
+  "Partially reco (\u22651 daughter from c/b)": {
+   "all": 44273,
+   "window": 9320
+  },
+  "Combinatorial": {
+   "all": 54974,
+   "window": 11258
+  }
+ },
+ "comp_bad_Dplus_incl_mc": {
+  "Signal (prompt c + from b)": {
+   "all": 2565,
+   "window": 2312
+  },
+  "Reflection $K\\leftrightarrow\\pi$": {
+   "all": 0,
+   "window": 0
+  },
+  "Other charm / other decay mode": {
+   "all": 9343,
+   "window": 2016
+  },
+  "Partially reco (\u22651 daughter from c/b)": {
+   "all": 893152,
+   "window": 158442
+  },
+  "Combinatorial": {
+   "all": 9841354,
+   "window": 1728989
+  }
+ },
+ "comp_good_Dplus_signal_mc": {
+  "Signal (prompt c + from b)": {
+   "all": 103907,
+   "window": 95749
+  },
+  "Reflection $K\\leftrightarrow\\pi$": {
+   "all": 0,
+   "window": 0
+  },
+  "Other charm / other decay mode": {
+   "all": 701,
+   "window": 198
+  },
+  "Partially reco (\u22651 daughter from c/b)": {
+   "all": 142941,
+   "window": 25794
+  },
+  "Combinatorial": {
+   "all": 19533,
+   "window": 4021
+  }
+ },
+ "comp_bad_Dplus_signal_mc": {
+  "Signal (prompt c + from b)": {
+   "all": 44533,
+   "window": 40180
+  },
+  "Reflection $K\\leftrightarrow\\pi$": {
+   "all": 0,
+   "window": 0
+  },
+  "Other charm / other decay mode": {
+   "all": 1603,
+   "window": 412
+  },
+  "Partially reco (\u22651 daughter from c/b)": {
+   "all": 1751424,
+   "window": 293418
+  },
+  "Combinatorial": {
+   "all": 3059659,
+   "window": 535104
+  }
+ },
+ "data_Dplus": {
+  "n_all": 32256002,
+  "n_good": 241847,
+  "n_bad": 32014155,
+  "good_window_over_sb_scaled": 1.4590017585085115,
+  "bad_window_over_sb_scaled": 0.9482451776967353
+ },
+ "dstar_fd_nd": {
+  "n": 147875,
+  "n_sig": 55686
+ },
+ "dstar_data": {
+  "n": 905828,
+  "n_good": 144480
+ },
+ "dstar_mb_nd_local": {
+  "files": 24,
+  "n": 325310,
+  "n_sig": 510
+ },
+ "cutflow_raw_local": {
+  "mb_nd": {
+   "files": 24,
+   "D0": [
+    [
+     4317,
+     952367
+    ],
+    [
+     4317,
+     952360
+    ],
+    [
+     4313,
+     952273
+    ]
+   ],
+   "Dplus": [
+    [
+     2631,
+     3330776
+    ],
+    [
+     2631,
+     3330766
+    ],
+    [
+     2629,
+     3330531
+    ]
+   ],
+   "Dstar": [
+    [
+     510,
+     324817
+    ],
+    [
+     510,
+     324817
+    ],
+    [
+     510,
+     324800
+    ]
+   ]
+  },
+  "fd_nd": {
+   "files": 8,
+   "D0": [
+    [
+     124215,
+     501503
+    ],
+    [
+     124214,
+     501502
+    ],
+    [
+     124049,
+     501434
+    ]
+   ],
+   "Dplus": [
+    [
+     58001,
+     1981398
+    ],
+    [
+     58001,
+     1981394
+    ],
+    [
+     57929,
+     1981135
+    ]
+   ],
+   "Dstar": [
+    [
+     25427,
+     206448
+    ],
+    [
+     25427,
+     206448
+    ],
+    [
+     25378,
+     206414
+    ]
+   ]
+  }
+ },
+ "cutflow_full": {
+  "D0": {
+   "incl_mc": [
+    [
+     "mass range + 3<pT<30 GeV (classifier input)",
+     9534,
+     3170411
+    ],
+    [
+     "signal window |m \u2212 m0| < 55 MeV",
+     8825,
+     1404246
+    ],
+    [
+     "score \u2265 WP80",
+     7098,
+     122334
+    ],
+    [
+     "score \u2265 WP70",
+     6187,
+     55933
+    ],
+    [
+     "score \u2265 WP50",
+     4432,
+     11360
+    ]
+   ],
+   "signal_mc": [
+    [
+     "mass range + 3<pT<30 GeV (classifier input)",
+     216175,
+     1297662
+    ],
+    [
+     "signal window |m \u2212 m0| < 55 MeV",
+     200101,
+     574737
+    ],
+    [
+     "score \u2265 WP80",
+     161210,
+     66015
+    ],
+    [
+     "score \u2265 WP70",
+     141293,
+     35849
+    ],
+    [
+     "score \u2265 WP50",
+     101321,
+     11570
+    ]
+   ]
+  },
+  "Dplus": {
+   "incl_mc": [
+    [
+     "mass range + 3<pT<30 GeV (classifier input)",
+     8727,
+     11078038
+    ],
+    [
+     "D* veto (min(m \u2212 m_K\u03c0) \u2265 160 MeV)",
+     8665,
+     10846291
+    ],
+    [
+     "signal window |m \u2212 m0| < 45 MeV",
+     7912,
+     1910643
+    ],
+    [
+     "score \u2265 WP80",
+     6391,
+     47687
+    ],
+    [
+     "score \u2265 WP70",
+     5600,
+     21196
+    ],
+    [
+     "score \u2265 WP50",
+     3972,
+     5358
+    ]
+   ],
+   "signal_mc": [
+    [
+     "mass range + 3<pT<30 GeV (classifier input)",
+     149705,
+     5135226
+    ],
+    [
+     "D* veto (min(m \u2212 m_K\u03c0) \u2265 160 MeV)",
+     148440,
+     4975861
+    ],
+    [
+     "signal window |m \u2212 m0| < 45 MeV",
+     135929,
+     858947
+    ],
+    [
+     "score \u2265 WP80",
+     109277,
+     52874
+    ],
+    [
+     "score \u2265 WP70",
+     95749,
+     30013
+    ],
+    [
+     "score \u2265 WP50",
+     68580,
+     10750
+    ]
+   ]
+  }
+ }
+}

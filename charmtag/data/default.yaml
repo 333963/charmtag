@@ -1,0 +1,156 @@
+# charmtag — konfiguracja domyślna (bez ścieżek lokalnych).
+# Ścieżki względne liczone względem katalogu pliku konfiguracyjnego (chyba że absolutne).
+# paths.h5_dir i paths.out_dir USTAW w swoim configu (-c) lub przez --h5-dir/--out-dir;
+# przykłady: configs/examples/{mac_v11,lxplus_v11,smoke}.yaml.
+
+paths:
+  h5_dir: null
+  out_dir: null
+  samples:
+    signal_mc: fd_nd_d150_Donly_none.h5        # forcedDecay ND2 → sygnał (truth)
+    incl_mc: mb_nd_d150_Donly_none.h5          # minbias ND → tło MC (R_win, kontrola)
+    data_none: data_428770_d150_Donly_none.h5  # joby 25–47 (~½ lumi)
+    data_tag: data_428770_d150_Donly_single_tag.h5
+
+io:
+  dataset: events          # tabela compound (v1.1); fallback: kolumna-na-dataset
+  chunk_rows: 2000000
+  max_rows: null           # limit wierszy na plik (testy / szybki bieg)
+  max_bkg_train: 3000000   # maks. kandydatów tła (sidebandy) do treningu
+  max_sig_train: 2000000
+  seed: 12345
+  dedup: false             # etap DD: dokładne duplikaty kandydatów: false | report | true (v1.1: 0 duplikatów)
+
+# Mapowanie nazwa logiczna → kandydaci nazw kolumn (pierwsza istniejąca wygrywa).
+# {i} = indeks córki. `charmtag inspect` pokazuje rozwiązanie na prawdziwym pliku.
+columns:
+  run: [run_number, RunNumber, runNumber]
+  event: [event_number, EventNumber, eventNumber]
+  weight: [event_weight]
+  decay_type: [Dmeson_decayType, Dmeson_decay_type]
+  m: [Dmeson_mass, Dmeson_m]
+  pt: [Dmeson_pt]
+  eta: [Dmeson_eta]
+  phi: [Dmeson_phi]
+  charge: [Dmeson_charge]
+  dm: [Dmeson_delta_mass, Dmeson_deltaMass]       # GeV; −0.999 = brak (nie-D*)
+  m_kpi1: [Dmeson_mKpi1]                          # MeV (!)
+  m_kpi2: [Dmeson_mKpi2]
+  Lxy: [Dmeson_Lxy]
+  chi2: [Dmeson_chi2, Dmeson_fitOutput__Chi2, Dmeson_vtx_chi2]
+  impact: [Dmeson_impact, Dmeson_d0]
+  impact_sig: [Dmeson_impactSignificance, Dmeson_impactSig]
+  impact_z0: [Dmeson_z0SinTheta, Dmeson_impactZ0SinTheta]
+  cos_theta_star: [Dmeson_cosThetaStar, Dmeson_costhetastar]
+  cos_theta_p: [Dmeson_cosThetaP, Dmeson_cosThetaPointing]
+  ptcone: [Dmeson_ptcone40, Dmeson_ptcone30]     # tylko do kontroli — ZAKAZANE jako cecha
+  truth: [Dmeson_truth_category, Dmeson_truthCategory]   # 0 = c, 1 = b, ≥8 tło
+  d_pt: ["Dmeson_daughter{i}_pt"]
+  d_eta: ["Dmeson_daughter{i}_eta"]
+  d_phi: ["Dmeson_daughter{i}_phi"]
+  d_p: ["Dmeson_daughter{i}_p"]                  # brak w v1.1 → p = pT·cosh η
+  d_d0: ["Dmeson_daughter{i}_d0"]
+  d_z0: ["Dmeson_daughter{i}_z0SinThetaPV", "Dmeson_daughter{i}_z0SinTheta"]
+  d_npts: ["Dmeson_daughter{i}_npts_dEdx"]
+  d_dedx: ["Dmeson_daughter{i}_dEdx", "Dmeson_daughter{i}_pixeldEdx"]
+
+# HYP (2026-11-08): kolumny opcjonalne (v1.2) — dokładane do ramek tylko, gdy są w pliku (v1.1: bez zmian, bez wpisu w missing)
+columns_opt:
+  hypo_swap: [Dmeson_hypo_swap]                   # 0 zgodna / 1 zamieniona / −1 nieokreślona (prawda hipotezy K/π, MC)
+  d_trk: ["Dmeson_daughter{i}_trackId"]           # ID śladu córki (pary hipotez D0, arbiter)
+
+# Jednostki v1.1: pT córek w MeV, m(Kπ) w MeV, reszta w GeV → mnożniki do GeV
+units:
+  d_pt: 0.001
+  m_kpi: 0.001
+
+species:
+  D0:
+    decay_type: 10
+    n_daughters: 2
+    m0: 1.86484
+    mass_range: [1.75, 2.00]
+    signal_window: 0.055       # |m−m0| < okno → region sygnału (zliczanie/kontrola)
+    sideband_min: 0.075        # tło treningowe: |m−m0| > 75 MeV
+    inner_band: [0.040, 0.075] # pasmo NIE używane w treningu → test rzeźbienia (jak studium 09-25; ogon sygnału i swapy)
+    kaon_index: 0
+    pion_indices: [1]
+    reflection: true
+  Dplus:
+    decay_type: 4
+    n_daughters: 3
+    m0: 1.86966
+    mass_range: [1.70, 2.20]
+    signal_window: 0.045
+    sideband_min: 0.070
+    inner_band: [0.045, 0.070]
+    kaon_index: 0
+    pion_indices: [1, 2]
+    dstar_veto: {dm_max: 0.160, apply: true}   # weto D*: min(m − m_Kπ) < 160 MeV (jak studium 09-25)
+    reflection: false
+
+signal:
+  # Sygnał MC = truth category 0/1 (c / b). W h5 v1.1 brak pdgId córek → poprawnej hipotezy K/π
+  # nie da się wskazać wprost. D0: gdy obie hipotezy tej samej pary torów są truth-matched,
+  # `swap_resolution: closest_mass` uznaje za poprawną tę bliżej m0, drugą za swap (truth += 100).
+  truth_values: [0, 1]
+  reflection_values: [100, 101]   # swapy K↔π (szablon refleksji D0)
+  swap_resolution: closest_mass   # closest_mass | keep_both | arbiter
+  # HYP: `arbiter` = prawda swapu z Dmeson_hypo_swap (v1.2; bez kolumny → closest_mass) + (gdy model_dir) kolumny p_hyp/hyp_keep
+  # z arbitra hipotezy (charmtag.hyp, cechy dE/dx/p bez masy); `charmtag fit` bierze wtedy tylko wiersze hyp_keep (1 na parę).
+  arbiter:
+    model_dir: null               # katalog modeli arbitra (hyp_analysis.py --save-model); null → tylko prawda z hypo_swap
+
+features:
+  # 7 cech „frozen” (baseline) — DO WERYFIKACJI z single_d_classifier/code/common.py
+  # F7 jak single_d_classifier_v20260925_01/code/common.py
+  frozen7: [log_pt, abs_eta, chi2, Lxy, impact_sig, abs_impact_z0, d_max_abs_d0]
+  # Wariant H = F7 + FXP bez izolacji (pointing = −log10(1−cosθ_P))
+  extra_H: [pointing, abs_cos_theta_star, abs_impact_sig, d_min_abs_d0, d_max_abs_z0, d_max_abs_eta,
+            dedx_K, log_p_K, npts_K, dedx_pi_max, log_p_pi_min]
+  forbidden: [ptcone, iso40, iso100]
+
+training:
+  variant: H                 # H | frozen7
+  n_folds: 5
+  pt_bins: [3, 5, 8, 30]
+  reweight_bins: {pt: [3, 3.5, 4, 4.5, 5, 6, 7, 8, 10, 12, 15, 20, 30], abs_eta: [0, 0.5, 1.0, 1.5, 2.0, 2.7]}
+  xgb:
+    tree_method: hist
+    n_estimators: 1500       # jak studium 09-25 (early stopping)
+    learning_rate: 0.05
+    max_depth: 6
+    min_child_weight: 5
+    subsample: 0.8
+    colsample_bytree: 0.8
+    reg_lambda: 1.0
+    early_stopping_rounds: 50
+    n_jobs: 0                # 0 → wszystkie rdzenie
+  working_points: [0.80, 0.70, 0.50]
+
+fit:
+  nbins: 100
+  signal_model: gauss2       # gauss | gauss2
+  background_model: exp      # exp | pol2
+  sigma_mode: constrained    # free | fixed | constrained (σ z fitu MC, więz Gaussa)
+  sigma_constraint_rel: 0.10
+  reflection_mode: template  # template | gauss | off (D0)
+  reflection_ratio: null     # null → z MC (N_refl/N_sig), inaczej liczba
+  wp: 0.70                   # WP sygnału do fitu po cięciu
+  datasets: [data_none, data_tag]
+  bootstrap_reps: 0         # σ(N) bootstrapem po zdarzeniach (wagi Poissona per (run, event)) dla gatunków z refleksją — kontrola σ_NLL
+                             # (D0 keep_both: wiersze bliźniacze K↔π jednej pary torów są skorelowane); np. 100; 0 = wyłączone
+  bootstrap_skip_nocut: true # bez bootstrapu dla fitów bez cięcia (niewiarygodne przy S/B ~0,4 %)
+
+dstar_control:
+  dstar_decay_type: 1
+  dm_signal: [0.1435, 0.1475]
+  dm_sideband: [0.1500, 0.1650]
+  match_tol_m: 0.0010        # |m(D0 kand.) − (m(D*)−Δm)| < tol [GeV]
+
+# B4 (2026-11-05) — opcje addytywne, domyślnie wyłączone (stare zachowanie)
+validate:
+  eps_b_nominal: legacy      # legacy | pol2 | salad → blok eps_B_SR w validation/<sp>.json (fit exp(pol2) SB→okno; SB sym; asym = legacy)
+syst:
+  bkg_shape_salad: false     # true → `charmtag syst all` dopisuje syst/bkg_shape_salad_{D0,Dplus,pairs}.json (informacyjnie; B płynie w fit2d)
+  salad_d0_truth_min2: true  # D0: niepewność ε_B @50 ±15 % (SALAD v1.1, mc_truth_min 2); false → ±20 %

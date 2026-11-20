@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "charmtag"
+version = "2.1.1"
+description = "ATLAS open charm w danych minimum bias: klasyfikator pojedynczego D i pary D–D (double charm). Projekt B (tło podobne do sygnału) — osobny pakiet charmbkg"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = ["numpy", "pandas", "h5py", "scipy", "scikit-learn", "pyyaml",
+                "charmbkg @ git+https://github.com/333963/charmbkg.git@v1.3.0"]   # projekt B (bkggen, HYP, SALAD) — przypięta wersja
+
+[project.optional-dependencies]
+fit = ["iminuit>=2.20", "matplotlib"]          # projekt A: fit masy, fit2d par, raporty
+xgb = ["xgboost"]                              # klasyfikator XGBoost (bez niego: fallback HistGradientBoosting)
+flow = ["charmbkg[flow]"]                     # projekt B: flow / FETA (SALAD i SB działają bez torcha)
+onnx = ["onnxruntime"]                         # ręczny dyskryminant (charmtag.hand) w validate
+dev = ["pytest", "ruff", "iminuit>=2.20", "matplotlib", "xgboost"]
+all = ["charmtag[fit,xgb,flow,onnx,dev]"]
+
+[project.scripts]
+charmtag = "charmtag.cli:main"                 # projekt A (podkomendy bkggen/s8salad → charmbkg)
+charmtag-bkggen = "charmtag.cli:bkggen_main"   # zgodność wstecz: = charmbkg-bkggen
+
+[tool.setuptools.packages.find]
+include = ["charmtag*"]
+
+[tool.setuptools.package-data]
+charmtag = ["data/*.yaml", "hand/onnx/*.onnx"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["slow: testy >10 s (toys, Asimov, systematyki) — pomijane w CI: pytest -m 'not slow'"]
+
+[tool.ruff]
+line-length = 150
+target-version = "py310"
+# lint tylko kod pakietu; analysis/ (kopie skryptów analizy) poza zakresem
+include = ["charmtag/**/*.py", "tests/**/*.py", "examples/**/*.py", "scripts/**/*.py", "pyproject.toml"]
+
+[tool.ruff.lint]
+select = ["F", "E9"]

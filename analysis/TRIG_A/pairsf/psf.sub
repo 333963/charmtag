@@ -1,0 +1,18 @@
+# pairsf: jeden job, 8 rdzeni (fity pass/fail Δm per klasa triggera × bin pT × kategoria score)
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/pairsf/psf_job.sh
+environment = "PSF_NPROC=8"
+output     = $(Q)/logs/pairsf/psf.$(ClusterId).out
+error      = $(Q)/logs/pairsf/psf.$(ClusterId).err
+log        = $(Q)/logs/pairsf/psf.log
+request_cpus   = 8
+request_memory = 16GB
+request_disk   = 4GB
++JobFlavour    = "workday"
+batch_name     = charm_pairsf
+should_transfer_files = NO
+getenv     = False
+max_retries = 1
+queue

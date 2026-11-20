@@ -1,0 +1,50 @@
+[
+ {
+  "shift_mev": 0.0,
+  "N": 4436.337253987443,
+  "N_err": 595.1842205817086,
+  "valid": true,
+  "edm": 0.0005017995959764592,
+  "bkg_model": "threshold_pol2"
+ },
+ {
+  "shift_mev": 1e-09,
+  "N": 4445.389278546253,
+  "N_err": 625.6050436855469,
+  "valid": true,
+  "edm": 0.0009995378218297032,
+  "bkg_model": "threshold_pol2"
+ },
+ {
+  "shift_mev": -1e-09,
+  "N": 4442.778852663174,
+  "N_err": 586.9894962688206,
+  "valid": true,
+  "edm": 0.0009485594261831767,
+  "bkg_model": "threshold_pol2"
+ },
+ {
+  "shift_mev": 1e-07,
+  "N": 4412.146204320183,
+  "N_err": 581.2068092466711,
+  "valid": true,
+  "edm": 0.000834545057971916,
+  "bkg_model": "threshold_pol2"
+ },
+ {
+  "shift_mev": -1e-07,
+  "N": 4445.521661287412,
+  "N_err": 602.4810264439523,
+  "valid": true,
+  "edm": 0.0009988516021588946,
+  "bkg_model": "threshold_pol2"
+ },
+ {
+  "shift_mev": 1e-06,
+  "N": 4412.751981366135,
+  "N_err": 586.8596949830228,
+  "valid": true,
+  "edm": 0.0008663187692568951,
+  "bkg_model": "threshold_pol2"
+ }
+]

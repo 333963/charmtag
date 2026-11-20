@@ -1,0 +1,18 @@
+{
+  "source": "B2 — D0 z tagu D* (sWeights/pass-fail dstar_refit), pelna lumi, model d0F, okno nom; charm-B2-sygnal-dstar.md §0/§2",
+  "date": "2026-11-04",
+  "definition": "SF_rel(WP) = [eps_data(WP)/eps_data(WP95)] / [eps_MC(WP)/eps_MC(WP95)]; systematyka eps_S (nie nominal). unc = blad statystyczny (3 metody x 2 okna zgodne w +-0,03).",
+  "wps": [90, 80, 70, 50],
+  "D0": {
+    "8-30": {"90": [0.97, 0.05], "80": [0.97, 0.05], "70": [0.97, 0.05], "50": [0.94, 0.05]},
+    "5-8":  {"90": [1.00, 0.15], "80": [1.00, 0.15], "70": [1.00, 0.15], "50": [1.00, 0.15]},
+    "3-5":  {"90": [1.00, 0.15], "80": [1.00, 0.15], "70": [1.00, 0.15], "50": [1.00, 0.15],
+             "note": "niemierzalne (bledy 40-160 %) — przyjete jak 5-8"}
+  },
+  "Dplus": {
+    "transfer_from": "D0",
+    "extra_unc": 0.05,
+    "note": "brak probki kontrolnej sygnalu D+ z danych; transfer SF_rel z D0 per bin + 5 % syst (N) w kwadraturze"
+  },
+  "swap_note": "swapy K<->pi (8 % piku dm w oknie) maja eps_H(WP50)=0,69 vs 0,49 dla prawdziwych D0 -> SF_rel dla czystego D0 nizszy o 0,02-0,03 przy WP50 (nie uwzgledniono)"
+}

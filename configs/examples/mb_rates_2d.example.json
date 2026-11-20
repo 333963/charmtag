@@ -1,0 +1,7 @@
+{"_comment": "Tempa MC minbias ND (Pythia, na zdarzenie; 'w' = z wagami krotności 2D, 'unw' = bez) — wartości z zamrożonych wejść 2026-09-26; przykład formatu dla pairs.mb_rates_json",
+ "dstar_true_per_event": {"unw": 6.67e-05, "w": 4.51e-04},
+ "D0_correct_per_event": {"unw": 4.79e-4, "w": 3.03e-3},
+ "Dplus_correct_per_event": {"unw": 4.40e-4, "w": 2.36e-3},
+ "pairs_D0D0": {"per_event_unw": 1.07e-6, "per_event_w": 9.9e-6},
+ "pairs_DpD0": {"per_event_unw": 2.08e-6, "per_event_w": 1.69e-5},
+ "pairs_DpDp": {"per_event_unw": 7.6e-7, "per_event_w": 5.05e-6}}

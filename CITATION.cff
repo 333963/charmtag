@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "Jeśli używasz tego kodu, zacytuj repozytorium."
+title: "charmtag — open charm w danych ATLAS minimum bias: klasyfikator D, pary D–D i generator tła podobnego do sygnału"
+type: software
+version: 2.1.1
+date-released: 2026-11-20
+repository-code: "https://github.com/333963/charmtag"
+license: MIT
+authors:
+  - name: "333963"

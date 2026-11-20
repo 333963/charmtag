@@ -1,0 +1,26 @@
+{
+ "mc_files": 78,
+ "mc_events": 19220986,
+ "data_events": 441671,
+ "data_events_all": 7989131,
+ "data_ref_tags": [
+  "anchors:303497"
+ ],
+ "data_mass_in_empty_mc_cells": 2.2641287293030332e-06,
+ "data_mass_in_empty_mc_cells_all": 3.129251479291052e-06,
+ "unw": {
+  "dstar_per_event": 9.083821194188476e-05,
+  "data_over_mc": 8.421566030927835,
+  "n_dstar": 1746
+ },
+ "w2": {
+  "dstar_per_event": 0.0005695883428299821,
+  "data_over_mc": 1.3430752395653343,
+  "n_dstar": 1746
+ },
+ "w2_alldata": {
+  "dstar_per_event": 0.0005713176703692008,
+  "data_over_mc": 1.3390098708230684,
+  "n_dstar": 1746
+ }
+}

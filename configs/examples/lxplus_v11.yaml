@@ -1,0 +1,36 @@
+# charmtag na lxplus/HTCondor (etap Q, 2026-11-02). Nadpisuje domyślny config pakietu (charmtag/data/default.yaml). PRZYKŁAD site-configu — ścieżki do zamiany na własne.
+# Wejście: części h5 z convert.sub (1 plik = 1 job produkcji), czytane wprost z EOS (FUSE), multi-plik wg etapu P
+# (glob sortowany, bez *.part; `row` w scores = wiersz globalny, attrs file_offsets/source).
+# Pełna lumi run 428770: wszystkie części data_428770 (lists/data_428770.txt).
+paths:
+  h5_dir: /eos/user/<u>/<user>/charm_h5_v11/parts
+  out_dir: /eos/user/<u>/<user>/charm_q/runs/lxplus_v11
+  samples:
+    signal_mc: fd_nd/fd_nd_*_none.h5            # forcedDecay ND2 → sygnał (truth)
+    incl_mc: mb_nd/mb_nd_*_none.h5              # minbias ND → tło MC, normalizacja par (direct)
+    data_none: data_428770/data_428770_*_none.h5
+    data_tag: data_428770/data_428770_*_single_tag.h5
+    # dyfrakcja (opcjonalnie: `charmtag apply ... --samples mb_sd mb_dd mb_cd fd_sd fd_dd fd_cd`):
+    # odkomentować, gdy potrzebne — apply bez --samples liczy wtedy też te próbki (dłużej).
+    # mb_sd: mb_sd/mb_sd_*_none.h5
+    # mb_dd: mb_dd/mb_dd_*_none.h5
+    # mb_cd: mb_cd/mb_cd_*_none.h5
+  sample_info:
+    # jobs_total = liczba plików ROOT danych na EOS (make_lists.sh wypisuje; listing CERNBox: 39 plików, numeracja do 47).
+    # lumi_fraction_jobs = n_jobs/jobs_total — tu 1 (komplet). Dokładna lumi z GRL: brak lokalnie.
+    data_none: {jobs_total: 39}
+    data_tag: {jobs_total: 39}
+io:
+  chunk_rows: 2000000
+  max_bkg_train: 3000000
+  max_sig_train: 2000000
+training:
+  xgb:
+    n_jobs: 8            # = request_cpus w charmtag.sub
+pairs:
+  lumi_fraction: 1.0     # cała lumi (μ i tak nie zależy od lumi: N_D* z tej samej próbki)
+  mb_rates_json: /afs/cern.ch/user/<u>/<user>/private/charm_q/inputs/mb_rates_2d.json
+  mc_pairs_neff: {D0D0: 8.2, DpD0: 13.5, DpDp: 7.5}   # n_eff par MC przy wagach 2D (t4_rates, VER_budget 16.11) → mc_stat 1/√n_eff
+  freeze_dir: /afs/cern.ch/user/<u>/<user>/private/charm_q/inputs   # tylko dla --closure (brak pełnego freeze → closure nie na lxplus)
+  # tag_sf: 0.70         # nadpisać wynikiem etapu N (SF tagu D*)
+  # sf_json: /afs/cern.ch/user/<u>/<user>/private/charm_q/inputs/sf_for_pairs_v2.json   # SF 09-26 (opcja; domyślnie SF=1)

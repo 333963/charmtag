@@ -1,0 +1,4 @@
+# Etap V, wariant dpF: D⁺ z cechami jak wrzesień „F_FXnoiso_databkg” (studium 09-25; R_win MC tła 1,03) = H bez PID/pędu córek
+# (bez dedx_K, log_p_K, npts_K, dedx_pi_max, log_p_pi_min). Nazwa wariantu w kodzie zostaje „H” (feature_list), inny out_dir.
+features:
+  extra_H: [pointing, abs_cos_theta_star, abs_impact_sig, d_min_abs_d0, d_max_abs_z0, d_max_abs_eta]

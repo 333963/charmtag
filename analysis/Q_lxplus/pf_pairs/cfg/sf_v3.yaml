@@ -1,0 +1,4 @@
+# N2: override do węzła fit2d/unblind (pf_pairs). Użycie: merge_cfg.py ... cfg/sf_v3.yaml  (NIE wysłane)
+pairs:
+  sf_json: INPUTS_DIR/sf_for_pairs_v3.json     # skopiować charm_work/N2_sf/sf_for_pairs_v3.json do Q_lxplus/inputs/ przed rsync
+  sf_unc_json: INPUTS_DIR/sf_for_pairs_v3.json # klucz "unc" → systematyka Y (±SF) w fit2d/toys, jeśli model to obsługuje; inaczej wariant ±1σ ręcznie

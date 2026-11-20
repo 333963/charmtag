@@ -1,0 +1,16 @@
+# UB_NDSW — jeden węzeł (skala σ D* w klasach triggera 428770 + 427929).
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/ub_ndsw/nw_job.sh fit
+output     = $(Q)/logs/ubndsw/nw.$(ClusterId).out
+error      = $(Q)/logs/ubndsw/nw.$(ClusterId).err
+log        = $(Q)/logs/ubndsw/nw.log
+request_cpus   = 2
+request_memory = 26GB
+request_disk   = 5GB
++JobFlavour    = "workday"
++JobBatchName  = "charm_ubndsw"
+should_transfer_files = NO
+getenv     = False
+queue

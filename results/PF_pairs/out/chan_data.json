@@ -1,0 +1,66 @@
+{
+ "tag": "data",
+ "D0D0": {
+  "n_pairs": 984018,
+  "frac_shared_d0z0": 0.19495781581231236,
+  "frac_shared_old_bitwise": 0.01976894731600438,
+  "frac_tol1pct": 0.16135985317341756,
+  "frac_share_2tracks": 0.01976894731600438,
+  "by_region": {
+   "SRxSR": {
+    "n": 193356,
+    "frac_shared_d0z0": 0.19414965142017832
+   },
+   "SRxSB": {
+    "n": 345954,
+    "frac_shared_d0z0": 0.19549130809298346
+   },
+   "SBxSB": {
+    "n": 155020,
+    "frac_shared_d0z0": 0.19553605986324346
+   }
+  }
+ },
+ "DpDp": {
+  "n_pairs": 5663476,
+  "frac_shared_d0z0": 0.32382374358079735,
+  "frac_shared_old_bitwise": 0.0,
+  "frac_tol1pct": 0.18327048618198435,
+  "frac_share_2tracks": 0.11390796041159175,
+  "by_region": {
+   "SRxSR": {
+    "n": 177270,
+    "frac_shared_d0z0": 0.34257911660179385
+   },
+   "SRxSB": {
+    "n": 1439617,
+    "frac_shared_d0z0": 0.3218272637791857
+   },
+   "SBxSB": {
+    "n": 3010987,
+    "frac_shared_d0z0": 0.3219339704887467
+   }
+  }
+ },
+ "DpD0": {
+  "n_pairs": 3364127,
+  "frac_shared_d0z0": 0.17668833548792898,
+  "frac_shared_old_bitwise": 0.0,
+  "frac_tol1pct": 0.1202261389061709,
+  "frac_share_2tracks": 0.03260608175612871,
+  "by_region": {
+   "SRxSR": {
+    "n": 254496,
+    "frac_shared_d0z0": 0.15902803973343393
+   },
+   "SRxSB": {
+    "n": 1325622,
+    "frac_shared_d0z0": 0.18046245460621504
+   },
+   "SBxSB": {
+    "n": 981804,
+    "frac_shared_d0z0": 0.180400568748956
+   }
+  }
+ }
+}

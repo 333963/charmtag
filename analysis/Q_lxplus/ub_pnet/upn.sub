@@ -1,0 +1,17 @@
+# Węzeł DAG UBPNET (VARS step, g, cpus, mem, disk, flavour, penv).
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/ub_pnet/upn_job.sh $(step) $(g)
+output     = $(Q)/logs/ubpnet/upn_$(step)_$(g).$(ClusterId).out
+error      = $(Q)/logs/ubpnet/upn_$(step)_$(g).$(ClusterId).err
+log        = $(Q)/logs/ubpnet/upn.log
+request_cpus   = $(cpus)
+request_memory = $(mem)
+request_disk   = $(disk)
++JobFlavour    = "$(flavour)"
++JobBatchName  = "charm_ubpnet"
+should_transfer_files = NO
+getenv     = False
+environment = "$(penv)"
+queue

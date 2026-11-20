@@ -1,0 +1,1288 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index f8063dd..df22a14 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -2,6 +2,22 @@
+ 
+ Format: najnowsze na górze. Litery w nawiasach (L, O, …) to identyfikatory notatek roboczych, w których powstała dana zmiana.
+ 
++## Niewydane — PD (2026-11-05): pary różniczkowe LS/OS, Δφ, Δy (DPS vs SPS) — addytywne, domyślnie wyłączone
++- **`charmtag/pairs/diff.py`** (nowy): zmienne par (Δφ zawinięte do [0, π], Δy ≈ |Δη|, znak zapachu c: D⁺ → ładunek, D0 → −ładunek K córki 0),
++  specyfikacja `pairs.diff: {var: sign|dphi|dy|sign_dphi, edges, expect: mc|flat, channels, charge_source, d0_flavour}` (domyślnie `null` = wyłączone;
++  `--diff` bez wartości → `sign`), biny per para PO wecie śladów i ślepocie, oczekiwania per bin (N_par × f_i; f_i z par MC minbias Pythii
++  albo płasko), fit2d per bin tym samym modelem (μ_i, 68 %, Z_i), łączenie po kanałach per bin, testy kształtu z profili
++  (hipotezy `pythia_mc`, `dps_flat`: Δχ² ~ χ²(n_bin−1)), blok like-sign (f_LS ± vs Pythia i LHCb 0,10–0,13, Z odrzucenia) → `fit2d_diff.json`, `tfin_diff.md`.
++- **`build.py`**: `scan_source(kin=, charge_src=)` dokłada do nóg η/φ/ładunek/`dq0` (v1.2 `Dmeson_daughter0_charge`; v1.1 → NaN);
++  `pairs.diff.charge_source` = h5 v1.2 (te same wiersze) jako źródło `dq0` po `row` z kontrolą run/event/decayType/masy (niezgodność = błąd);
++  `d0_flavour_closest_mass` (K z hipotezy bliższej m0 tej samej pary torów — tylko do znaku, arbitraż/masa bez zmian; to samo w MC);
++  `mc_rates(diff=)` → pary MC per bin; `cmd_pairs(diff=)` → `pairs_full_diff.npz` (`<kanał>__<bin>`), `pair_inputs_diff.json`.
++  `hists.build_pair_hists(diff=)` (trzeci element) i `frozen.sbsb_counts(diff=)` — ta sama pętla; bez `diff` wynik bitowo jak dotąd (test z hashem).
++- **CLI**: `charmtag pairs --unblind --diff [VAR]`, `charmtag fit2d --unblind --diff` (`--diff` bez `--unblind` → błąd).
++- `model.Expectation.expected`: brak parametru GLM dla pustej kategorii nogi → 0 zamiast KeyError (rzadkie wejścia; nominał bez zmian).
++- Testy `tests/test_pd_diff.py` (11): zmienne/biny, bitowa identyczność starych histogramów, podział binów = całość, SB×SB i MC per bin,
++  odzyskanie μ_i w 2 binach (D⁺D⁺), end-to-end v1.1 → v1.2 (charge_source, wykrycie złej kolejności wierszy), CLI. Paczka lxplus `pkg/pd_diff/`.
++
+ ## 2.0.3 — 2026-11-05 (B4 + B1-D0: ε_B pod pikiem, SF_rel, SALAD v1.1) — addytywne, domyślnie wyłączone
+ - **validate** (`validate.eps_b_nominal: pol2|salad`, domyślnie `legacy`): blok `eps_B_SR` w `validation/<sp>.json` — nominał ε_B pod pikiem
+   z fitu exp(pol2) do SB danych → okno (S8 `data_eff`, VAL `pol2_closure`); proxy SB **symetryczne**; asymetryczne zostają jako `sb_asym_legacy`
+diff --git a/charmtag/pairs/build.py b/charmtag/pairs/build.py
+index 7189180..d1844ff 100644
+--- a/charmtag/pairs/build.py
++++ b/charmtag/pairs/build.py
+@@ -48,6 +48,7 @@ DEFAULTS = {
+     "R_reference": 1.70,
+     "chunk_rows": 2_000_000,
+     "track_id": "d0z0",                   # PF 2026-11-04: ID śladu z bitów (d0, z0sinθ_PV), niezależne od refitu; "pt_eta" = stare (weto wspólnych śladów nieskuteczne)
++    "diff": None,                         # PD 2026-11-05: pary różniczkowe (sign | dphi | dy | sign_dphi), domyślnie WYŁĄCZONE — patrz pairs/diff.py
+ }
+ 
+ 
+@@ -104,21 +105,37 @@ def track_ids(cfg, g):
+     return [_trk_id_d0z0(g[f"d_pt{i}"], g[f"d_d0{i}"], g[f"d_z0{i}"]) for i in range(3)]
+ 
+ 
+-def scan_source(cfg, key, rows: np.ndarray, chunk=2_000_000, dstar=True, count_events=True):
+-    """Jeden przebieg po pliku źródłowym: ślady dla `rows`, kandydaci D* (Δm < 0.165), liczba zdarzeń z kandydatami."""
++def scan_source(cfg, key, rows: np.ndarray, chunk=2_000_000, dstar=True, count_events=True, kin=False, charge_src=None):
++    """Jeden przebieg po pliku źródłowym: ślady dla `rows`, kandydaci D* (Δm < 0.165), liczba zdarzeń z kandydatami.
++    PD: `kin=True` dokłada do nóg η, φ, ładunek kandydata i `dq0` = ładunek córki 0 (K; kolumna v1.2 `Dmeson_daughter0_charge`,
++    brak → NaN); `charge_src` = lista plików h5 v1.2 z tymi samymi wierszami (60 kolumn bit w bit) → `dq0` czytane stamtąd
++    (join po `row`, kontrola run/event/decayType/masa w wybranych wierszach — niezgodność = błąd)."""
+     path = C.sample_path(cfg, key)
+     ds_name = cfg["io"]["dataset"]
+     cm = resolve_columns(list_columns(path, ds_name), cfg["columns"], 3)
+     need = (["run", "event", "decay_type", "m", "dm", "truth", "pt"] + [f"d_pt{i}" for i in range(3)] + [f"d_eta{i}" for i in range(3)]
+             + [f"d_d0{i}" for i in range(3)] + [f"d_z0{i}" for i in range(3)])  # PF: d0/z0 → ID śladu niezależne od refitu
++    if kin:
++        need += ["eta", "phi", "charge"]
+     cols = {k: cm.get(k) for k in need if cm.get(k)}
++    if kin:
++        from .diff import D_CHARGE_CANDS
++        dq = resolve_columns(list_columns(path, ds_name), {"d_charge": cfg["columns"].get("d_charge", D_CHARGE_CANDS)}, 1)
++        if dq.get("d_charge0"):
++            cols["dq0"] = dq["d_charge0"]
++        miss = [k for k in ("eta", "phi", "charge") if k not in cols]
++        if miss:
++            raise SystemExit(f"pairs diff: brak kolumn kinematyki {miss} w {path} (cfg.columns)")
+     rows = np.unique(np.asarray(rows, np.int64))
+     trk, dst, evs = [], [], []
+     from ..io import open_events  # etap P: 1 plik albo lista (row = wiersz globalny)
++    cs = _ChargeSource(charge_src, ds_name, cfg) if (kin and charge_src) else None
+     with open_events(C.sample_paths(cfg, key) if C.is_multi(cfg, key) else [path], ds_name) as ds:
+         n = ds.shape[0]
+         if cfg["io"].get("max_rows"):
+             n = min(n, int(cfg["io"]["max_rows"]))
++        if cs is not None and cs.ds.shape[0] != ds.shape[0]:
++            raise SystemExit(f"pairs diff charge_source[{key}]: {cs.ds.shape[0]} wierszy vs {ds.shape[0]} w źródle — to nie te same pliki/kolejność")
+         for start in range(0, n, chunk):
+             stop = min(n, start + chunk)
+             a = ds.fields(list(cols.values()))[start:stop]
+@@ -127,7 +144,13 @@ def scan_source(cfg, key, rows: np.ndarray, chunk=2_000_000, dstar=True, count_e
+             run = g["run"].astype(np.int64) if "run" in g else np.zeros(stop - start, np.int64)
+             sel = rows[(rows >= start) & (rows < stop)] - start
+             if len(sel):
+-                trk.append(pd.DataFrame({"row": sel + start, "trk0": t[0][sel], "trk1": t[1][sel], "trk2": t[2][sel]}))
++                T1 = {"row": sel + start, "trk0": t[0][sel], "trk1": t[1][sel], "trk2": t[2][sel]}
++                if kin:
++                    T1.update({"eta": g["eta"][sel].astype(float), "phi": g["phi"][sel].astype(float), "charge": g["charge"][sel].astype(float),
++                               "dq0": g["dq0"][sel].astype(float) if "dq0" in g else np.full(len(sel), np.nan)})
++                    if cs is not None:
++                        T1["dq0"] = cs.dq0(start, stop, sel, g, key)
++                trk.append(pd.DataFrame(T1))
+             if dstar:
+                 dsm = (g["decay_type"] == cfg["dstar_control"]["dstar_decay_type"]) & (g["dm"] > 0) & (g["dm"] < 0.165)
+                 if dsm.any():
+@@ -137,12 +160,76 @@ def scan_source(cfg, key, rows: np.ndarray, chunk=2_000_000, dstar=True, count_e
+                                              "trk0": t[0][dsm], "trk1": t[1][dsm], "trk2": t[2][dsm]}))
+             if count_events:
+                 evs.append(np.unique((run << 40) ^ g["event"].astype(np.int64)))
+-    T = pd.concat(trk, ignore_index=True) if trk else pd.DataFrame(columns=["row", "trk0", "trk1", "trk2"])
++    T = pd.concat(trk, ignore_index=True) if trk else pd.DataFrame(columns=["row", "trk0", "trk1", "trk2"] + (["eta", "phi", "charge", "dq0"] if kin else []))
+     D = pd.concat(dst, ignore_index=True) if dst else pd.DataFrame(columns=["run", "event", "m", "dm", "pt", "truth", "trk0", "trk1", "trk2"])
+     nev = int(len(np.unique(np.concatenate(evs)))) if evs else 0
++    if cs is not None:
++        cs.close()
++        log.info("pairs diff: ładunek córki 0 z charge_source[%s] (%d plików, %d wierszy sprawdzonych, 0 niezgodnych)", key, len(cs.paths), cs.checked)
+     return T, D, nev
+ 
+ 
++class _ChargeSource:
++    """PD: h5 v1.2 jako źródło `Dmeson_daughter0_charge` dla nóg z v1.1 (te same wiersze). Kontrola zgodności w wybranych wierszach."""
++    CHECK = ("run", "event", "decay_type", "m")
++
++    def __init__(self, paths, ds_name, cfg):
++        from ..io import open_events
++        from .diff import D_CHARGE_CANDS
++        self.paths = list(paths)
++        self.ds = open_events(self.paths, ds_name)
++        avail = list_columns(self.paths, ds_name)
++        self.cm = resolve_columns(avail, {k: cfg["columns"][k] for k in self.CHECK}, 3)
++        dq = resolve_columns(avail, {"d_charge": cfg["columns"].get("d_charge", D_CHARGE_CANDS)}, 1)
++        if not dq.get("d_charge0"):
++            raise SystemExit(f"pairs diff charge_source: brak kolumny ładunku córki 0 ({D_CHARGE_CANDS}) w {self.paths[0]} — to nie v1.2?")
++        self.col = dq["d_charge0"]
++        self.checked = 0
++
++    def dq0(self, start, stop, sel, g, key):
++        cols = [self.cm[k] for k in self.CHECK if self.cm.get(k)] + [self.col]
++        a = self.ds.fields(cols)[start:stop]
++        for k in self.CHECK:
++            if self.cm.get(k) and k in g:
++                x, y = np.asarray(a[self.cm[k]])[sel], g[k][sel]
++                bad = ~(x == y) if not np.issubdtype(x.dtype, np.floating) else ~(np.isclose(x.astype(float), y.astype(float), rtol=0, atol=1e-9) | (np.isnan(x.astype(float)) & np.isnan(y.astype(float))))
++                if bad.any():
++                    raise SystemExit(f"pairs diff charge_source[{key}]: {int(bad.sum())} z {len(sel)} wierszy ma inne `{k}` niż źródło v1.1 "
++                                     f"(wiersze {start}–{stop}) — join po `row` nieważny (inne pliki/kolejność?)")
++        self.checked += len(sel)
++        v = np.asarray(a[self.col])[sel].astype(float)
++        return np.where(np.abs(v) > 1.5, np.nan, v)          # sentinel −999 → NaN
++
++    def close(self):
++        self.ds.close()
++
++
++def charge_files(cfg, spec, key):
++    """`pairs.diff.charge_source`: {klucz: plik|glob|lista} albo katalog z plikami o nazwach jak paths.samples → lista plików v1.2 lub None."""
++    src = (spec or {}).get("charge_source")
++    if not src:
++        return None
++    import glob as _glob
++    if isinstance(src, str):
++        d = os.path.expanduser(src)
++        if not os.path.isdir(d):
++            raise SystemExit(f"pairs.diff.charge_source={src!r}: katalog nie istnieje (albo podaj słownik {{klucz_próbki: plik/glob}})")
++        out = [os.path.join(d, os.path.basename(q)) for q in C.sample_paths(cfg, key)]
++        return out if all(os.path.exists(q) for q in out) else None
++    it = src.get(key)
++    if not it:
++        return None
++    items = list(it) if isinstance(it, (list, tuple)) else [it]
++    out = []
++    for q in items:
++        q = os.path.expanduser(str(q))
++        q = q if os.path.isabs(q) else os.path.join(cfg["paths"]["h5_dir"], q)
++        out += [x for x in sorted(_glob.glob(q)) if not x.endswith(".part")] if any(c in q for c in "*?[") else [q]
++    if not out or not all(os.path.exists(q) for q in out):
++        raise SystemExit(f"pairs.diff.charge_source[{key}]: brak plików {out or items}")
++    return out
++
++
+ # ----------------------------------------------------------------------------- nogi
+ def thresholds(sig, effs):
+     s = np.sort(sig["score"].to_numpy())
+@@ -170,6 +257,21 @@ def arbitrate(df):
+     return df[df._r == pick].drop(columns=["_key", "_n", "_r"])
+ 
+ 
++def d0_flavour_closest_mass(L: pd.DataFrame) -> pd.DataFrame:
++    """PD: ładunek córki „K" (`dq0`) do znaku zapachu D0 brany z hipotezy K/π bliższej m0 spośród rzędów TEJ SAMEJ pary torów
++    (obie hipotezy = osobne wiersze h5). Swap (zła hipoteza) odwraca znak K → bez tego LS/OS w D0 rozmyte o ~30 % na nogę
++    (udział swapów w szablonach 27–39 %). Zmienia TYLKO `dq0` (klasyfikacja LS/OS); arbitraż (hash, ślepy na masę), masa, kategoria
++    i wszystko w nominale bez zmian. To samo w MC minbias (`legs_for_truth`) → udział f_MC per bin z tą samą resztkową dylucją."""
++    if not len(L):
++        return L
++    lo, hi = np.minimum(L.trk0, L.trk1), np.maximum(L.trk0, L.trk1)
++    key = (L.source_file.astype(str) + ":" + L.entry.astype(str) + ":" + lo.astype(str) + ":" + hi.astype(str)).to_numpy()
++    dm = pd.Series(np.abs(L.m.to_numpy(float) - M0[10]), index=L.index)
++    best = dm.groupby(key).idxmin()                              # indeks wiersza najbliższego m0 w grupie
++    dq_best = pd.Series(L.dq0.loc[best.to_numpy()].to_numpy(), index=best.index)
++    return L.assign(dq0=dq_best.reindex(key).to_numpy())
++
++
+ def tag_keys(D, p):
+     c, w = p["tag_dm"]
+     t = D[np.abs(D.dm - c) < w]
+@@ -186,7 +288,10 @@ def make_legs(sc: pd.DataFrame, T: pd.DataFrame, dt: int, thr: dict, p: dict, ta
+     cats = p["cats"]
+     if dt == 10:
+         t90, t65 = thr[f"{p['d0_arbitration_wp']:g}"], thr["0.65"]
+-        L = arbitrate(L[L.score >= t90])
++        L = L[L.score >= t90]
++        if "dq0" in L and (p.get("diff") or {}).get("d0_flavour", "closest_mass") == "closest_mass":
++            L = d0_flavour_closest_mass(L)                      # PD: znak D0 z hipotezy bliższej m0 (tylko klasyfikacja LS/OS)
++        L = arbitrate(L)
+         tg = np.zeros(len(L), bool)
+         if tags:
+             tg = np.fromiter(((int(r), int(e), int(a), int(b)) in tags for r, e, a, b in
+@@ -274,8 +379,9 @@ def n_dstar_data(D, p, D_mc=None):
+         return {**old, "method": "massfit.fit_dm (fallback)", "old": old, "fallback_reason": repr(e)}
+ 
+ 
+-def mc_rates(legs_c: dict, D, p):
+-    """Nieważone tempa w MC minbias ND (h5): poprawne D, pary poprawnych (bez wspólnych śladów), D* truth (to samo okno)."""
++def mc_rates(legs_c: dict, D, p, diff=None):
++    """Nieważone tempa w MC minbias ND (h5): poprawne D, pary poprawnych (bez wspólnych śladów), D* truth (to samo okno).
++    PD: `diff` → dodatkowo `n_pairs_diff[ch]` = pary MC per bin różniczkowy (ta sama zmienna co w danych) i `n_pairs_diff_undefined`."""
+     w = p["dstar_norm"]["d0_window"]
+     dsel = (np.abs(D.m - D.dm - M0[10] / 1000) < w) & D.truth.isin([0, 1]) & (D.dm < p["dstar_norm"]["fit_range"][1])
+     n_ds = int(dsel.sum())
+@@ -286,6 +392,14 @@ def mc_rates(legs_c: dict, D, p):
+     out = {"n_dstar": n_ds, "n_single": {dt: int(len(legs_c[dt])) for dt in (10, 4)}, "n_pairs": {}}
+     for ch, (a, b) in CHANNELS.items():
+         out["n_pairs"][ch] = int(((P.decay_type1 == min(a, b)) & (P.decay_type2 == max(a, b))).sum())
++    if diff is not None:
++        from .diff import diff_bin, nbins
++        db = diff_bin(P, diff)
++        out["n_pairs_diff"], out["n_pairs_diff_undefined"] = {}, {}
++        for ch, (a, b) in CHANNELS.items():
++            s = ((P.decay_type1 == min(a, b)) & (P.decay_type2 == max(a, b))).to_numpy()
++            out["n_pairs_diff"][ch] = [int((s & (db == k)).sum()) for k in range(nbins(diff))]
++            out["n_pairs_diff_undefined"][ch] = int((s & (db < 0)).sum())
+     return out
+ 
+ 
+@@ -301,16 +415,26 @@ def weight_factors(mb):
+ 
+ 
+ # ----------------------------------------------------------------------------- komenda
+-def cmd_pairs(cfg, unblind=False, norm_mode="direct"):
++def cmd_pairs(cfg, unblind=False, norm_mode="direct", diff=None):
++    """PD: `diff` = zmienna różniczkowa z CLI ('cfg' → z `pairs.diff`) albo None (wyłączone — wyjścia jak dotąd)."""
+     p = pcfg(cfg)
+     var = p["variant"]
+     E = edges(p)
+     out = pdir(cfg)
+     os.makedirs(out, exist_ok=True)
++    from .diff import spec_from_cfg
++    spec = spec_from_cfg(p, diff)
++    if spec is not None and not unblind:
++        raise SystemExit("pairs --diff: pary różniczkowe wymagają jawnego --unblind (pomiar jest rozszerzeniem odsłoniętego wyniku)")
++    kin = spec is not None
++    if kin:
++        p = {**p, "diff": spec}                                   # znormalizowana specyfikacja (make_legs: d0_flavour)
+     sdir = lambda sp: os.path.join(cfg["paths"].get("scores_dir") or os.path.join(cfg["paths"]["out_dir"], "scores"), f"{sp}_{var}")  # S5 nom_mix (z Q_lxplus/s5_bkg/src, brakowało w L): honoruj paths.scores_dir
+     cols = ["row", "run", "event", "m", "pt", "score", "veto_ok", "truth"]
+     ncat = {10: 5, 4: 3}
+     meta = {"variant": var, "config": {k: v for k, v in p.items()}, "unblind": bool(unblind)}
++    if spec is not None:
++        meta["diff"] = spec
+ 
+     # --- progi kategorii z MC sygnału (OOF), poprawne kandydaty w zakresie mas
+     thr, scs = {}, {}
+@@ -331,7 +455,7 @@ def cmd_pairs(cfg, unblind=False, norm_mode="direct"):
+             lo = thr[dt]["0.9"] if dt == 10 else thr[dt]["0.65"]
+             S[dt] = x[(x.score >= lo) & (x.m * 1000 >= E[dt][0]) & (x.m * 1000 < E[dt][-1])]
+         rows = np.concatenate([S[10].row.to_numpy(), S[4].row.to_numpy()])
+-        T, D, nev = scan_source(cfg, key, rows, chunk=p["chunk_rows"])
++        T, D, nev = scan_source(cfg, key, rows, chunk=p["chunk_rows"], kin=kin, charge_src=charge_files(cfg, spec, key) if kin else None)
+         tags = tag_keys(D, p)
+         legs = {dt: make_legs(S[dt], T, dt, thr[dt], p, tags if dt == 10 else None, E) for dt in (10, 4)}
+         return legs, D, nev
+@@ -371,8 +495,8 @@ def cmd_pairs(cfg, unblind=False, norm_mode="direct"):
+     alt["frozen"] = {"n_pair": {ch: fD["N"] * rw["pair_per_dstar"][ch] for ch in CHANNELS},
+                      "n_real": {dt: fD["N"] * rw["single_per_dstar"][dt] for dt in (10, 4)}}
+     # (b) 'direct': nieważone stosunki X/D* w MC minbias ND z h5 v1.1 (ta sama selekcja co dane) × c_w
+-    legs_mb, D_mb, _ = legs_for_truth(cfg, p, "incl_mc", E, sdir, cols)
+-    r = mc_rates(legs_mb, D_mb, p)
++    legs_mb, D_mb, _ = legs_for_truth(cfg, p, "incl_mc", E, sdir, cols, kin=spec)
++    r = mc_rates(legs_mb, D_mb, p, diff=spec)
+     meta["mc_rates_unweighted"] = r
+     ok_direct = r["n_dstar"] >= 50 and all(v >= 5 for v in r["n_pairs"].values())
+     if r["n_dstar"] > 0:
+@@ -398,8 +522,20 @@ def cmd_pairs(cfg, unblind=False, norm_mode="direct"):
+                ndata=float(nev_d), n_real=n_real, n_pair=n_pair, sbsb=sbsb, meta=meta)
+     I.to_files(os.path.join(out, "pair_inputs"))
+     region = "full" if unblind else "blind"
+-    H, counts = build_pair_hists(L, I, region)
++    if spec is None:
++        H, counts = build_pair_hists(L, I, region)
++    else:
++        H, counts, Hd = build_pair_hists(L, I, region, diff=spec)            # H identyczne jak bez diff (test); Hd per bin
+     np.savez(os.path.join(out, f"pairs_{region}.npz"), **H)
++    if spec is not None:
++        from .diff import diff_inputs_json
++        np.savez(os.path.join(out, f"pairs_{region}_diff.npz"), **Hd)
++        counts["mc_undefined"] = r.get("n_pairs_diff_undefined", {})
++        Dj = diff_inputs_json(I, spec, sbsb_counts(sb, ncat, diff=spec), r.get("n_pairs_diff", {}), counts)
++        with open(os.path.join(out, "pair_inputs_diff.json"), "w") as f:
++            json.dump(Dj, f, indent=1, default=float)
++        log.info("pairs diff[%s]: biny %s; pary danych per bin %s (nieokreślone %d); pary MC per bin %s (nieokreślone %s)", spec["var"],
++                 Dj["labels"], counts["diff_kept"], counts["diff_undefined"], Dj["n_mc_pairs"], Dj["n_mc_undefined"])
+     with open(os.path.join(out, "pairs_counts.json"), "w") as f:  # PF: liczniki weta wspólnych śladów (pairs_before_veto, pairs_shared_track)
+         json.dump({**counts, "track_id": p["track_id"]}, f, indent=1)
+     if p.get("mix_control"):  # etap S5: kontrola tła par mixingiem nóg (opcja, domyślnie wyłączona)
+@@ -417,27 +553,35 @@ def legs_for_export(L: pd.DataFrame, unblind: bool) -> pd.DataFrame:
+     """Nogi danych do zapisu. ŚLEPO: tylko nogi z sidebandów (|m−m0| > 75/70 MeV) — z pełnej listy nóg centrum SS dałoby się
+     odtworzyć jednym joinem po zdarzeniu (recenzja kodu 2.0.1, P0-1). Pełna lista dopiero z --unblind."""
+     cols = ["source_file", "entry", "cand", "decay_type", "m", "cat", "trk0", "trk1", "trk2"]
++    cols += [c for c in ("eta", "phi", "charge", "dq0") if c in L]          # PD: kinematyka nóg (tylko gdy pairs --diff)
+     if unblind:
+         return L[cols]
+     sb = np.abs(L.m - L.decay_type.map(M0)) > L.decay_type.map(SBW)
+     return L.loc[sb, cols]
+ 
+ 
+-def legs_for_truth(cfg, p, key, E, sdir, cols):
+-    """MC minbias: poprawne D (truth 0/1, bez cięcia score) ze śladami — do temp par/D*."""
++def legs_for_truth(cfg, p, key, E, sdir, cols, kin=None):
++    """MC minbias: poprawne D (truth 0/1, bez cięcia score) ze śladami — do temp par/D*. PD: `kin` = spec diff → także η/φ/ładunki."""
+     S = {}
++    cm_d0 = bool(kin) and (kin or {}).get("d0_flavour", "closest_mass") == "closest_mass"
+     for sp, dt in (("D0", 10), ("Dplus", 4)):
+         x = store.load(os.path.join(sdir(sp), f"{key}.h5"), cols)
+-        x = x[np.isin(x.truth, [0, 1]) & (x.m * 1000 >= E[dt][0]) & (x.m * 1000 < E[dt][-1])]
++        tv = [0, 1, 100, 101] if (cm_d0 and dt == 10) else [0, 1]   # PD: swapy potrzebne do wyboru hipotezy bliższej m0 (potem odrzucane)
++        x = x[np.isin(x.truth, tv) & (x.m * 1000 >= E[dt][0]) & (x.m * 1000 < E[dt][-1])]
+         if dt == 4:
+             x = x[x.veto_ok.astype(bool)]
+         S[dt] = x
+-    T, D, nev = scan_source(cfg, key, np.concatenate([S[10].row.to_numpy(), S[4].row.to_numpy()]), chunk=p["chunk_rows"])
++    T, D, nev = scan_source(cfg, key, np.concatenate([S[10].row.to_numpy(), S[4].row.to_numpy()]), chunk=p["chunk_rows"], kin=bool(kin),
++                            charge_src=charge_files(cfg, kin, key) if kin else None)
+     legs = {}
+     for dt in (10, 4):
+         z = S[dt].merge(T, on="row")
+-        legs[dt] = z.assign(source_file=z.run.astype(np.int64).astype(str), entry=z.event.astype(np.int64), cand=z.row.astype(np.int64),
+-                            decay_type=dt, m=z.m * 1000.0)
++        z = z.assign(source_file=z.run.astype(np.int64).astype(str), entry=z.event.astype(np.int64), cand=z.row.astype(np.int64),
++                     decay_type=dt, m=z.m * 1000.0)
++        if cm_d0 and dt == 10:
++            z = d0_flavour_closest_mass(z)
++            z = z[np.isin(z.truth, [0, 1])]
++        legs[dt] = z
+     return legs, D, nev
+ 
+ 
+diff --git a/charmtag/pairs/cli.py b/charmtag/pairs/cli.py
+index 84f014b..5c936b9 100644
+--- a/charmtag/pairs/cli.py
++++ b/charmtag/pairs/cli.py
+@@ -3,6 +3,8 @@
+   charmtag pairs  -c configs/examples/mac_v11.yaml [--unblind] [--norm direct|frozen|truth]
+   charmtag fit2d  -c configs/examples/mac_v11.yaml [--unblind] [--ntoys 50] [--asimov-only]
+   charmtag fit2d  --closure FREEZE_DIR     # test domknięcia na zamrożonych wejściach (niepubliczne)
++  charmtag pairs  -c CFG --unblind --diff [sign|dphi|dy|sign_dphi]   # PD: pary różniczkowe (LS/OS, Δφ) — wymaga --unblind
++  charmtag fit2d  -c CFG --unblind --diff                              # → fit2d_diff.json + tfin_diff.md
+ Domyślnie ślepo: centrum 2D (obie nogi w oknie) nie trafia do histogramów i μ z danych nie jest liczone.
+ """
+ from __future__ import annotations
+@@ -33,7 +35,11 @@ def main(argv=None):
+     ap.add_argument("--closure", default=None, metavar="FREEZE_DIR",
+                     help="test domknięcia na zamrożonych wejściach (katalog freeze; niepubliczny) — domyślnie pairs.freeze_dir z configu")
+     ap.add_argument("--stageb-hists", default=None, help="opcjonalnie: histogramy stageB do porównania w --closure")
++    ap.add_argument("--diff", nargs="?", const="cfg", default=None, metavar="VAR",
++                    help="PD: pary różniczkowe; VAR = sign | dphi | dy | sign_dphi (bez VAR → `pairs.diff` z configu, domyślnie sign). Wymaga --unblind")
+     a = ap.parse_args(argv)
++    if a.diff is not None and not a.unblind:
++        raise SystemExit("--diff wymaga --unblind (pary różniczkowe są rozszerzeniem odsłoniętego pomiaru)")
+ 
+     from .. import config as C
+     from ..cli import _setup_log
+@@ -50,7 +56,7 @@ def main(argv=None):
+     log.info("charmtag %s unblind=%s out=%s", a.command, a.unblind, out)
+     if a.command == "pairs":
+         from .build import cmd_pairs
+-        cmd_pairs(cfg, unblind=a.unblind, norm_mode=a.norm)
++        cmd_pairs(cfg, unblind=a.unblind, norm_mode=a.norm, diff=a.diff)
+     else:
+         from . import fit2d as F
+         from .model import Model, load_inputs
+@@ -61,6 +67,19 @@ def main(argv=None):
+             log.info("koniec fit2d --closure (%.0f s)", time.time() - t0)
+             return 0 if r["PASS"] else 3
+         I = load_inputs(os.path.join(out, "pair_inputs"))
++        if a.diff is not None:
++            from . import diff as DF
++            D = DF.load_diff(out)
++            p = os.path.join(out, "pairs_full_diff.npz")
++            if not os.path.exists(p):
++                raise SystemExit(f"brak {p}: najpierw `charmtag pairs --unblind --diff ...`")
++            Hd = dict(np.load(p))
++            nom = os.path.join(out, "fit2d_unblind.json")
++            nom = json.load(open(nom)) if os.path.exists(nom) else None
++            rep = DF.run_diff(I, D, Hd, out, ntoy=a.ntoys)
++            print(DF.write_report(out, I, D, rep, nominal=nom))
++            log.info("koniec fit2d --diff (%.0f s)", time.time() - t0)
++            return 0
+         M = Model(I)
+         if a.asimov_only:
+             rep = {"asimov_nominal": F.asimov(M)}
+diff --git a/charmtag/pairs/diff.py b/charmtag/pairs/diff.py
+new file mode 100644
+index 0000000..7461f68
+--- /dev/null
++++ b/charmtag/pairs/diff.py
+@@ -0,0 +1,491 @@
++"""Pary różniczkowe (etap PD, 2026-11-05): Δφ / Δy / znak (like-sign) par D–D — rozróżnienie DPS od SPS.
++
++Rozszerzenie ADDYTYWNE, domyślnie wyłączone (`pairs.diff: null`). Włączone (`charmtag pairs --unblind --diff dphi` albo
++`pairs.diff: {var: dphi, edges: [0, 1.5708, 3.1416]}`) dokłada do nóg kinematykę (η, φ, ładunek, ładunek córki 0 = K),
++a pary — PO wecie wspólnych śladów, tą samą pętlą co histogramy nominalne — dzieli na biny zmiennej różniczkowej:
++  dphi  |φ1−φ2| zawinięte do [0, π]           (DPS ≈ płasko; SPS: pik przy π, z „gluon splitting" także przy 0)
++  dy    |η1−η2|  (≈ |Δy| dla pT ≫ m)           (DPS: szerokie; SPS: skupione)
++  sign  like / opposite (znak kwarku c obu nóg: D⁺ → ładunek, D0 → −ładunek K córki 0; v1.1 bez ładunków córek →
++        D0 nieokreślone → tylko D⁺D⁺)         (DPS: like ≈ opposite; SPS: prawie wyłącznie opposite)
++Per bin: histogramy (n_cat, 25, 25) per kanał (`pairs_full_diff.npz`, klucz `<kanał>__<bin>`), zliczenia SB×SB, oczekiwania
++(n_pair × f_i, f_i = udział binu w parach MC minbias Pythii — `expect: mc` — albo 1/n_bin — `expect: flat`), fit2d per bin
++tym samym modelem (μ_i, Z_i, 68 %), łączenie po kanałach per bin i testy kształtu: profil μ_i przeliczony na dowolną hipotezę
++udziałów h_i (Pythia = f_MC, DPS = płasko / 1:1) → Δχ² = 2·min_μ Σ_i ΔNLL_i(μ·h_i/f_i) − Σ_i 2·ΔNLL_i(min), p-value χ²(n_bin−1).
++Nic w nominale (selekcja, szablony, κ, normalizacja całkowita) się nie zmienia; μ_i sumują się do nominału z dokładnością fitów.
++"""
++from __future__ import annotations
++
++import json
++import logging
++import os
++import time
++
++import numpy as np
++import pandas as pd
++from scipy.stats import chi2 as _chi2
++
++from . import CHANNELS
++from .model import Inputs, Model
++
++log = logging.getLogger("charmtag")
++
++PI = float(np.pi)
++VARS = ("sign", "dphi", "dy", "sign_dphi")
++DEFAULT_EDGES = {"dphi": [0.0, PI / 2, PI], "dy": [0.0, 1.0, 5.0], "sign_dphi": [0.0, PI / 2, PI]}
++DEFAULT_CHANNELS = {"dphi": ["D0D0", "DpD0"], "dy": ["D0D0", "DpD0"], "sign": None, "sign_dphi": None}   # None → wszystkie
++# INT (literatura DPS, 2026-11-05): przy ~220 parach jedyna rozstrzygająca obserwabla to LS/OS (SPS → tylko OS, DPS → 1:1;
++# LHCb LS/OS ≈ 0,10–0,13) → `sign` domyślny; Δφ (2 biny) < 1σ łącznie, sensowny tylko wewnątrz OS (`sign_dphi`).
++DEFAULTS = {"var": "sign", "edges": None, "expect": "mc", "channels": "default", "f_min": 0.05, "mc_min_pairs": 10,
++            "charge_source": None,                              # {klucz_próbki: plik/glob/lista h5 v1.2} → ładunek córki 0 (K) po `row`
++            "d0_flavour": "closest_mass"}                       # closest_mass (K z hipotezy bliższej m0; build.d0_flavour_closest_mass) | hypothesis
++KIN_COLS = ("eta", "phi", "charge", "dq0")                     # kolumny nóg dokładane przez scan_source(kin=True)
++D_CHARGE_CANDS = ["Dmeson_daughter{i}_charge"]                 # v1.2; brak w v1.1 → NaN (nie dotyka cfg.columns → cache nietknięty)
++LHCB_LS_OS = (0.10, 0.13)                                      # LHCb: stosunek LS/OS par D–D (odniesienie w raporcie)
++GRID = np.round(np.arange(-1.5, 10.01, 0.25), 2)               # szerszy niż fit2d.GRID: μ_i w binie o małym f_i może być > 5
++FINE = np.linspace(GRID[0], GRID[-1], int((GRID[-1] - GRID[0]) / 0.0025) + 1)
++
++
++# ----------------------------------------------------------------------------- specyfikacja
++def spec_from_cfg(p: dict, var_override=None):
++    """`pairs.diff` z configu (+ nadpisanie zmiennej z CLI) → pełna specyfikacja albo None (wyłączone)."""
++    d = p.get("diff")
++    if var_override is None and not d:
++        return None
++    if d is True or d is None:
++        d = {}
++    if isinstance(d, str):
++        d = {"var": d}
++    s = {**DEFAULTS, **d}
++    if var_override and var_override != "cfg":
++        s["var"] = var_override
++        if not (d or {}).get("edges") or (d or {}).get("var") != var_override:
++            s["edges"] = None
++    if s["var"] not in VARS:
++        raise SystemExit(f"pairs.diff.var={s['var']!r} — dozwolone: {VARS}")
++    if s["var"] == "sign":
++        s["edges"] = None
++    elif not s["edges"]:
++        s["edges"] = list(DEFAULT_EDGES[s["var"]])
++    else:
++        s["edges"] = [float(x) for x in s["edges"]]
++        if len(s["edges"]) < 2 or np.any(np.diff(s["edges"]) <= 0):
++            raise SystemExit(f"pairs.diff.edges muszą rosnąć: {s['edges']}")
++    if s["expect"] not in ("mc", "flat"):
++        raise SystemExit("pairs.diff.expect: mc | flat")
++    if s["d0_flavour"] not in ("closest_mass", "hypothesis"):
++        raise SystemExit("pairs.diff.d0_flavour: closest_mass | hypothesis")
++    if s["channels"] == "default":
++        s["channels"] = DEFAULT_CHANNELS[s["var"]]
++    if s["channels"] is None or s["channels"] == "all":
++        s["channels"] = list(CHANNELS)
++    bad = [c for c in s["channels"] if c not in CHANNELS]
++    if bad:
++        raise SystemExit(f"pairs.diff.channels: nieznane kanały {bad}")
++    return s
++
++
++def _edge_labels(e):
++    return [f"[{a:.3g},{b:.3g})" if k < len(e) - 2 else f"[{a:.3g},{b:.3g}]" for k, (a, b) in enumerate(zip(e[:-1], e[1:]))]
++
++
++def labels(spec) -> list[str]:
++    if spec["var"] == "sign":
++        return ["like", "opposite"]
++    if spec["var"] == "sign_dphi":                                # like (łącznie) + opposite × Δφ
++        return ["like"] + [f"opp:{x}" for x in _edge_labels(spec["edges"])]
++    return _edge_labels(spec["edges"])
++
++
++def nbins(spec) -> int:
++    return len(labels(spec))
++
++
++def flat_fractions(spec) -> np.ndarray:
++    """Hipoteza „DPS": Δφ płasko (udział ∝ szerokość binu), znak 1:1 (sign_dphi: like ½, opposite ½ płasko w Δφ);
++    dla dy — równy udział (tylko punkt odniesienia)."""
++    if spec["var"] == "sign":
++        return np.array([0.5, 0.5])
++    e = np.asarray(spec["edges"], float)
++    w = np.diff(e) / np.diff(e).sum()
++    if spec["var"] == "sign_dphi":
++        return np.r_[0.5, 0.5 * w]
++    return w if spec["var"] == "dphi" else np.full(len(w), 1.0 / len(w))
++
++
++# ----------------------------------------------------------------------------- zmienne par
++def wrap_dphi(phi1, phi2):
++    d = np.abs(np.asarray(phi1, float) - np.asarray(phi2, float)) % (2 * PI)
++    return np.where(d > PI, 2 * PI - d, d)
++
++
++def charm_sign(decay_type, charge, dq0):
++    """Znak kwarku c nogi: +1 = c (D⁺, D0 → K⁻π⁺), −1 = c̄; 0 = nieokreślony (D0 bez ładunku K w v1.1)."""
++    dt = np.asarray(decay_type)
++    q = np.nan_to_num(np.asarray(charge, float), nan=0.0)
++    k = np.nan_to_num(np.asarray(dq0, float), nan=0.0)
++    k = np.where(np.abs(k) > 1.5, 0.0, k)                     # sentinel −999 (v1.2) → nieokreślony
++    s = np.where(dt == 4, np.sign(q), np.where(dt == 10, -np.sign(k), 0.0))
++    return s.astype(int)
++
++
++def pair_vars(P: pd.DataFrame) -> dict:
++    """Zmienne pary z ramki par (kolumny nóg z sufiksami 1/2): dphi, dy, like_sign (−1 nieokreślony, 0 opposite, 1 like)."""
++    need = [f"{c}{s}" for c in KIN_COLS for s in (1, 2)]
++    miss = [c for c in need if c not in P]
++    if miss:
++        raise SystemExit(f"pairs diff: brak kolumn kinematyki nóg {miss} — nogi zbudowane bez `scan_source(kin=True)`")
++    dphi = wrap_dphi(P.phi1.to_numpy(), P.phi2.to_numpy())
++    dy = np.abs(P.eta1.to_numpy(float) - P.eta2.to_numpy(float))
++    s1 = charm_sign(P.decay_type1.to_numpy(), P.charge1.to_numpy(), P.dq01.to_numpy())
++    s2 = charm_sign(P.decay_type2.to_numpy(), P.charge2.to_numpy(), P.dq02.to_numpy())
++    like = np.where((s1 == 0) | (s2 == 0), -1, (s1 == s2).astype(int))
++    return {"dphi": dphi, "dy": dy, "like_sign": like}
++
++
++def diff_bin(P: pd.DataFrame, spec) -> np.ndarray:
++    """Indeks binu różniczkowego każdej pary (−1 = poza zakresem / nieokreślony). Ostatnia krawędź domknięta (π, Δy_max)."""
++    if not len(P):
++        return np.zeros(0, int)
++    v = pair_vars(P)
++    if spec["var"] == "sign":
++        return np.where(v["like_sign"] < 0, -1, np.where(v["like_sign"] == 1, 0, 1))
++    x = v["dphi" if spec["var"] == "sign_dphi" else spec["var"]]
++    e = np.asarray(spec["edges"], float)
++    b = np.digitize(x, e) - 1
++    b = np.where(x == e[-1], len(e) - 2, b)
++    b = np.where((b >= 0) & (b < len(e) - 1) & np.isfinite(x), b, -1)
++    if spec["var"] == "sign_dphi":
++        ls = v["like_sign"]
++        return np.where(ls < 0, -1, np.where(ls == 1, 0, np.where(b >= 0, b + 1, -1)))
++    return b
++
++
++def hkey(ch, k) -> str:
++    return f"{ch}__{k}"
++
++
++# ----------------------------------------------------------------------------- oczekiwania per bin
++def fractions_mc(n_mc: dict, spec, ch) -> tuple[np.ndarray, np.ndarray]:
++    """Udział binów w parach MC minbias (Pythia) + błąd binomialny; brak MC → NaN."""
++    n = np.asarray(n_mc.get(ch, []), float)
++    if n.size != nbins(spec) or n.sum() <= 0:
++        return np.full(nbins(spec), np.nan), np.full(nbins(spec), np.nan)
++    f = n / n.sum()
++    return f, np.sqrt(np.clip(f * (1 - f) / n.sum(), 0, None))
++
++
++def fit_fractions(spec, n_mc: dict, ch) -> tuple[np.ndarray, str]:
++    """Udziały użyte do normalizacji μ_i (SS_i = μ_i · n_pair · f_i): MC, a gdy za mało par MC / pusty bin → płasko (z notką)."""
++    flat = flat_fractions(spec)
++    if spec["expect"] == "flat":
++        return flat, "flat"
++    f, _ = fractions_mc(n_mc, spec, ch)
++    ntot = float(np.nansum(np.asarray(n_mc.get(ch, []), float)))
++    if not np.all(np.isfinite(f)) or ntot < spec["mc_min_pairs"] or np.any(f < spec["f_min"]):
++        log.warning("pairs diff %s: udziały MC (%s, N=%.0f) nieużyteczne → normalizacja płaska", ch, np.round(f, 3), ntot)
++        return flat, "flat (fallback: MC N=%.0f, f=%s)" % (ntot, np.round(f, 3).tolist())
++    return f, "mc"
++
++
++def diff_inputs_json(I: Inputs, spec, sbsb_bins: dict, n_mc: dict, counts: dict) -> dict:
++    """Blok `pair_inputs_diff.json`: per bin n_pair, n_real, sbsb (per kanał), udziały MC/fit/flat. Czytelny dla fit2d --diff."""
++    nb = nbins(spec)
++    tot_sb = sum(sum(sbsb_bins[k].values()) for k in range(nb))
++    bins = []
++    for k in range(nb):
++        # udział kombinatoryki (SB×SB) w binie → skala startowa SB/BS (κ wolne absorbuje resztę); dolna granica 1/(2·n_bin),
++        # żeby pusty bin SB×SB (mało statystyki) nie zerował składowych SB/BS modelu
++        g = max(sum(sbsb_bins[k].values()) / tot_sb, 0.5 / nb) if tot_sb > 0 else 1.0 / nb
++        b = {"label": labels(spec)[k], "g_sbsb": g, "n_real": {str(dt): v * g for dt, v in I.n_real.items()},
++             "n_pair": {}, "f_fit": {}, "f_mode": {}, "f_mc": {}, "f_mc_err": {}, "f_flat": float(flat_fractions(spec)[k]),
++             "sbsb": {f"{ch}_{i}_{j}": int(v) for (ch, i, j), v in sbsb_bins[k].items()},
++             "pairs_kept": int(counts.get("diff_kept", {}).get(str(k), 0))}
++        for ch in CHANNELS:
++            ff, mode = fit_fractions(spec, n_mc, ch)
++            fm, fe = fractions_mc(n_mc, spec, ch)
++            b["n_pair"][ch] = float(I.n_pair[ch] * ff[k])
++            b["f_fit"][ch], b["f_mode"][ch] = float(ff[k]), mode
++            b["f_mc"][ch], b["f_mc_err"][ch] = (float(fm[k]) if np.isfinite(fm[k]) else None), (float(fe[k]) if np.isfinite(fe[k]) else None)
++        bins.append(b)
++    return {"spec": spec, "labels": labels(spec), "nbins": nb, "n_mc_pairs": {ch: [int(x) for x in n_mc.get(ch, [])] for ch in CHANNELS},
++            "n_mc_undefined": {ch: int(v) for ch, v in (counts.get("mc_undefined") or {}).items()},
++            "pairs_undefined": int(counts.get("diff_undefined", 0)), "bins": bins}
++
++
++def inputs_for_bin(I: Inputs, D: dict, k: int) -> Inputs:
++    """Kopia wejść nominalnych z normalizacją i SB×SB binu k (szablony, Y, dataleg, nev — wspólne)."""
++    b = D["bins"][k]
++    sbsb = {}
++    for key, v in b["sbsb"].items():
++        ch, i, j = key.split("_")
++        sbsb[(ch, int(i), int(j))] = int(v)
++    return Inputs(edges=I.edges, ncat=I.ncat, sig=I.sig, sig_comp=I.sig_comp, Y=I.Y, dataleg=I.dataleg, nev_legs=I.nev_legs,
++                  ndata=I.ndata, n_real={int(dt): float(v) for dt, v in b["n_real"].items()}, n_pair=dict(b["n_pair"]), sbsb=sbsb,
++                  meta={**I.meta, "diff_bin": k, "diff_label": b["label"], "diff_spec": D["spec"]})
++
++
++# ----------------------------------------------------------------------------- fit per bin + testy kształtu
++def _interp_profile(scan: dict):
++    mus = np.array(sorted(float(k) for k in scan))
++    d = np.array([scan[f"{m:g}"] for m in mus])
++    d = d - min(d.min(), 0.0)
++    return mus, d
++
++
++def profile_at(scan: dict, mu):
++    """ΔNLL profilu w μ (liniowo między punktami siatki; poza siatką — ekstrapolacja ostatniego odcinka, ≥ 0)."""
++    mus, d = _interp_profile(scan)
++    mu = np.asarray(mu, float)
++    out = np.interp(mu, mus, d)
++    lo, hi = mu < mus[0], mu > mus[-1]
++    if lo.any():
++        out = np.where(lo, d[0] + (d[0] - d[1]) / (mus[0] - mus[1]) * (mu - mus[0]), out)
++    if hi.any():
++        out = np.where(hi, d[-1] + (d[-1] - d[-2]) / (mus[-1] - mus[-2]) * (mu - mus[-1]), out)
++    return np.clip(out, 0.0, None)
++
++
++def combine_bins(prof: dict, scale: dict | None = None):
++    """Wspólne μ dla zbioru profili {klucz: scan}; `scale[klucz]` = h_i/f_i (hipoteza kształtu): ΔNLL_i(μ·scale_i).
++    Zwraca μ̂, 68 %, q = 2·min ΣΔNLL (względem niezależnych minimów), Z względem μ=0."""
++    tot = np.zeros_like(FINE)
++    for key, scan in prof.items():
++        s = 1.0 if scale is None else float(scale[key])
++        tot += profile_at(scan, FINE * s)
++    q = 2 * float(tot.min())
++    tot0 = tot - tot.min()
++    mu_c = float(FINE[np.argmin(tot0)])
++    ok = FINE[tot0 <= 0.5]
++    q0 = 2 * float(np.interp(0.0, FINE, tot0)) if mu_c > 0 else 0.0
++    return {"mu": mu_c, "mu_68": [float(ok.min()), float(ok.max())], "q_shape": q, "Z": float(np.sqrt(max(q0, 0.0)))}
++
++
++def shape_tests(prof_ch: dict, D: dict, ch, spec) -> dict:
++    """Testy kształtu w kanale: hipotezy udziałów h (pythia = f_MC, dps = płasko) vs μ_i wolne; Δχ² ~ χ²(n_bin−1)."""
++    nb = D["nbins"]
++    out = {}
++    hyps = {"dps_flat": flat_fractions(spec)}
++    fm = np.array([D["bins"][k]["f_mc"][ch] if D["bins"][k]["f_mc"][ch] is not None else np.nan for k in range(nb)])
++    if np.all(np.isfinite(fm)) and fm.min() > 0:
++        hyps["pythia_mc"] = fm
++    ff = np.array([D["bins"][k]["f_fit"][ch] for k in range(nb)])
++    for name, h in hyps.items():
++        sc = {k: float(h[k] / ff[k]) for k in prof_ch}
++        r = combine_bins(prof_ch, sc)
++        ndf = max(len(prof_ch) - 1, 1)
++        out[name] = {"h": [float(x) for x in h], "mu_common": r["mu"], "mu_common_68": r["mu_68"], "chi2": r["q_shape"], "ndf": ndf,
++                     "p": float(_chi2.sf(r["q_shape"], ndf))}
++    return out
++
++
++def run_diff(I: Inputs, D: dict, Hd: dict, out: str, ntoy: int = 0, seed: int = 2026, channels=None) -> dict:
++    """Fit odsłonięty per bin (plan B, pełna płaszczyzna), łączenie po kanałach per bin, testy kształtu per kanał i łącznie."""
++    from . import fit2d as F
++    spec = D["spec"]
++    nb = D["nbins"]
++    channels = list(spec["channels"] if channels is None else channels)
++    rep = {"mode": "unblind-diff", "spec": spec, "labels": D["labels"], "channels_fitted": channels, "channels": {}, "bins": {}, "tests": {}}
++    models = [Model(inputs_for_bin(I, D, k)) for k in range(nb)]
++    prof = {}                                                   # (ch, k) → profil
++    for ch in channels:
++        rc = {"bins": {}}
++        for k in range(nb):
++            key = hkey(ch, k)
++            n = Hd.get(key)
++            lab = D["labels"][k]
++            if n is None or n.sum() < 20 or D["bins"][k]["n_pair"][ch] <= 0:
++                rc["bins"][lab] = {"skipped": f"za mało par ({0 if n is None else n.sum():.0f}) albo S_oczek = 0"}
++                log.warning("fit2d DIFF %s %s: %s", ch, lab, rc["bins"][lab]["skipped"])
++                continue
++            t0 = time.time()
++            cf = models[k].channel(ch)
++            m1 = cf.fit(n)
++            m0 = cf.fit(n, fix_mu=0.0, start=np.array(m1.values))
++            r = {"mu_hat": float(m1.values["mu"]), "mu_err_hesse": float(m1.errors["mu"]), "Z": F.z_from(m1, m0), "valid": bool(m1.valid),
++                 "S_expected_full_plane": float(sum(v["SS"] for v in cf.exp.values())), "n_pairs": float(n.sum()),
++                 "f_fit": D["bins"][k]["f_fit"][ch], "f_mode": D["bins"][k]["f_mode"][ch], "f_mc": D["bins"][k]["f_mc"][ch],
++                 "f_mc_err": D["bins"][k]["f_mc_err"][ch], "f_flat": D["bins"][k]["f_flat"]}
++            dev, ndf = cf.deviance(m1, n)
++            r.update({"dev": dev, "ndf": ndf, "dev_ndf": dev / max(ndf, 1)})
++            r["kappa"] = {nm: [float(m1.values[nm]), float(m1.errors[nm])] for nm in cf.names if nm.startswith("kap")}
++            r["profile_dNLL"], r["mu_profile_68"] = F.profile(cf, n, np.ones(n.shape[1:], bool), m1, grid=GRID)
++            if ntoy:
++                r["toys_at_fit"] = F.toys(models[k], ch, cf.lam(np.array(m1.values)), ntoy, seed + k, mu_true=r["mu_hat"])
++            prof[(ch, k)] = r["profile_dNLL"]
++            rc["bins"][lab] = r
++            log.info("fit2d DIFF %s %s: μ=%.2f [%.2f, %.2f] Z=%.2f S_oczek=%.1f f_%s=%.3f (%.0f s)", ch, lab, r["mu_hat"],
++                     *r["mu_profile_68"], r["Z"], r["S_expected_full_plane"], r["f_mode"].split()[0], r["f_fit"], time.time() - t0)
++        pc = {k: prof[(ch, k)] for k in range(nb) if (ch, k) in prof}
++        if len(pc) >= 2:
++            rc["tests"] = shape_tests(pc, D, ch, spec)
++            rc["data_fractions"] = data_fractions(rc["bins"], D, ch)
++            if nb == 2 and len(pc) == 2:
++                rc["ratio_0_over_1"] = ratio_of_bins(rc["bins"][D["labels"][0]], rc["bins"][D["labels"][1]])
++        rep["channels"][ch] = rc
++    # per bin: łączenie po kanałach (jak fit2d.combine) → μ_bin, Z_bin
++    for k in range(nb):
++        pk = {ch: prof[(ch, k)] for ch in channels if (ch, k) in prof}
++        if pk:
++            rep["bins"][D["labels"][k]] = {**combine_bins(pk), "channels": list(pk)}
++    # łącznie: (a) μ per bin wspólne w kanałach [nb parametrów] vs (b) jedno μ globalne z kształtem h [1 parametr]
++    if len(prof) >= 2:
++        tests = {}
++        for name in ("pythia_mc", "dps_flat"):
++            sc = {}
++            for (ch, k) in prof:
++                t = rep["channels"][ch].get("tests", {}).get(name)
++                if t is None:
++                    break
++                sc[(ch, k)] = t["h"][k] / D["bins"][k]["f_fit"][ch]
++            else:
++                if sc:
++                    r = combine_bins(prof, sc)
++                    # model zagnieżdżony: μ_k per bin wspólne w kanałach, TA SAMA hipoteza kształtu h (SS = μ_k·N_par·h_k) → nb parametrów
++                    ks = sorted({k for (_, k) in prof})
++                    q_bins = sum(combine_bins({key: prof[key] for key in prof if key[1] == k}, sc)["q_shape"] for k in ks)
++                    dchi2 = max(r["q_shape"] - q_bins, 0.0)
++                    tests[name] = {"mu_global": r["mu"], "mu_global_68": r["mu_68"], "Z_global": r["Z"], "chi2_global": r["q_shape"],
++                                   "chi2_bins_common": q_bins, "dchi2": dchi2, "ndf": max(len(ks) - 1, 1),
++                                   "p_flat_in_bins": float(_chi2.sf(dchi2, max(len(ks) - 1, 1)))}
++        rep["tests"] = tests
++        tot = combine_bins(prof)                                  # bez kształtu: μ wspólne we wszystkich (ch, bin) — kontrola ≈ nominał
++        rep["combined_all_bins"] = {"mu": tot["mu"], "mu_68": tot["mu_68"], "Z": tot["Z"], "note": "μ wspólne (kanały × biny) przy f_fit — kontrola vs nominał"}
++    if spec["var"].startswith("sign"):
++        rep["like_sign"] = ls_summary(rep, D)
++    F._js(os.path.join(out, "fit2d_diff.json"), rep)
++    return rep
++
++
++def _z_from_p(p):
++    """p-value testu χ² → równoważna istotność Z ≥ 0 (χ² o 1 st. sw.: Z = √χ²)."""
++    return float(np.sqrt(_chi2.isf(min(max(p, 1e-300), 1.0), 1)))
++
++
++def ls_summary(rep: dict, D: dict) -> dict:
++    """INT: f_LS = N_LS/(N_LS+N_OS) w sygnale danych (z μ_i i oczekiwań Pythii per klasa), Pythia f_LS^MC ± binomialnie,
++    LHCb LS/OS 0,10–0,13 → f_LS 0,09–0,12, Z odrzucenia „f_LS = Pythia" (z testu kształtu pythia_mc: Z = √χ² przy 1 st. sw.)."""
++    labs = D["labels"]
++    like = labs[0]
++    out = {"lhcb_ls_os": list(LHCB_LS_OS), "lhcb_f_ls": [r / (1 + r) for r in LHCB_LS_OS], "channels": {}}
++    for ch, rc in rep["channels"].items():
++        df = rc.get("data_fractions", {})
++        if like not in df or df[like][0] is None:
++            continue
++        b = rc["bins"]
++        n_ls = b[like]["mu_hat"] * D["bins"][0]["n_pair"][ch]
++        n_os = sum(b[lab]["mu_hat"] * D["bins"][k]["n_pair"][ch] for k, lab in enumerate(labs) if k > 0 and "mu_hat" in b.get(lab, {}))
++        fmc = D["bins"][0]["f_mc"][ch]
++        e = {"N_LS_sig": float(n_ls), "N_OS_sig": float(n_os), "f_LS": df[like], "f_LS_pythia": [fmc, D["bins"][0]["f_mc_err"][ch]],
++             "ls_os": (float(n_ls / n_os) if n_os > 0 else None)}
++        t = rc.get("tests", {}).get("pythia_mc")
++        if t:
++            e["Z_reject_pythia"] = _z_from_p(t["p"])
++        t = rc.get("tests", {}).get("dps_flat")
++        if t:
++            e["Z_reject_dps"] = _z_from_p(t["p"])
++        out["channels"][ch] = e
++    for name in ("pythia_mc", "dps_flat"):
++        t = rep.get("tests", {}).get(name)
++        if t:
++            out[f"Z_reject_{name}_combined"] = _z_from_p(t["p_flat_in_bins"])
++    return out
++
++
++def data_fractions(bins_rep: dict, D: dict, ch) -> dict:
++    """Udziały binów w sygnale danych: f_i^dane = μ_i f_i / Σ μ_j f_j (błąd z Hesse, niezależne biny, propagacja liniowa)."""
++    labs = [lab for lab in D["labels"] if "mu_hat" in bins_rep.get(lab, {})]
++    s = np.array([bins_rep[lab]["mu_hat"] * bins_rep[lab]["f_fit"] for lab in labs])
++    e = np.array([bins_rep[lab]["mu_err_hesse"] * bins_rep[lab]["f_fit"] for lab in labs])
++    tot = s.sum()
++    out = {}
++    if tot <= 0:
++        return {lab: [None, None] for lab in labs}
++    for i, lab in enumerate(labs):
++        f = s[i] / tot
++        grad = np.array([-(s[i] / tot ** 2)] * len(s))
++        grad[i] = (tot - s[i]) / tot ** 2
++        out[lab] = [float(f), float(np.sqrt(np.sum((grad * e) ** 2)))]
++    return out
++
++
++def ratio_of_bins(r0: dict, r1: dict) -> dict:
++    """μ_0/μ_1 (normalizacja f_fit) z błędem z Hesse; przy μ_1 ≤ 0 → None."""
++    if r1["mu_hat"] <= 0 or r0["mu_hat"] <= 0:
++        return {"ratio": None}
++    ratio = r0["mu_hat"] / r1["mu_hat"]
++    rel = np.sqrt((r0["mu_err_hesse"] / r0["mu_hat"]) ** 2 + (r1["mu_err_hesse"] / r1["mu_hat"]) ** 2)
++    return {"ratio": float(ratio), "err": float(ratio * rel),
++            "ratio_data_fractions": float((r0["mu_hat"] * r0["f_fit"]) / (r1["mu_hat"] * r1["f_fit"]))}
++
++
++# ----------------------------------------------------------------------------- raport
++def write_report(out: str, I: Inputs, D: dict, rep: dict, nominal: dict | None = None, path: str | None = None) -> str:
++    """tfin_diff.md: tabela per kanał × bin, łączenie per bin, testy kształtu (Pythia / DPS), kontrola sumy vs nominał."""
++    spec, labs = D["spec"], D["labels"]
++    name = {"dphi": "Δφ", "dy": "Δy≈|Δη|", "sign": "znak (like/opposite)"}[spec["var"]]
++    L = [f"# Pary D–D różniczkowo — {name} (ODSŁONIĘTE, etap PD)", "",
++         f"- Zmienna: `{spec['var']}`, biny: {', '.join(labs)}; normalizacja μ_i: `{spec['expect']}` (SS_i = μ_i · N_par · f_i); "
++         f"kanały fitowane: {', '.join(rep['channels_fitted'])}.",
++         "- Pary MC minbias (Pythia) per bin: " + "; ".join(f"{ch} {D['n_mc_pairs'].get(ch)}" for ch in CHANNELS)
++         + f"; nieokreślone w danych (poza binami): {D['pairs_undefined']}.",
++         "- Nominał (łącznie, bez binów): " + (f"wspólne μ = {nominal['combined']['mu_common']:.2f} "
++                                              f"[{nominal['combined']['mu_common_68'][0]:.2f}, {nominal['combined']['mu_common_68'][1]:.2f}], "
++                                              f"Z = {nominal['combined']['Z']:.2f}σ" if nominal else "— (brak fit2d_unblind.json)") + ".", ""]
++    L += ["| kanał | bin | N par | S oczek. | f_fit (tryb) | f_MC ± | μ_i | 68 % | Z_i | dev/ndf | f_i dane ± |", "|---|---|---|---|---|---|---|---|---|---|---|"]
++    for ch, rc in rep["channels"].items():
++        df = rc.get("data_fractions", {})
++        for lab in labs:
++            r = rc["bins"].get(lab, {})
++            if "mu_hat" not in r:
++                L.append(f"| {ch} | {lab} | — | — | — | — | {r.get('skipped', '—')} | | | | |")
++                continue
++            fmc = f"{r['f_mc']:.2f} ± {r['f_mc_err']:.2f}" if r.get("f_mc") is not None else "—"
++            fd = df.get(lab, [None, None])
++            fds = f"{fd[0]:.2f} ± {fd[1]:.2f}" if fd[0] is not None else "—"
++            L.append(f"| {ch} | {lab} | {r['n_pairs']:.0f} | {r['S_expected_full_plane']:.1f} | {r['f_fit']:.2f} ({r['f_mode'].split()[0]}) | {fmc} | "
++                     f"{r['mu_hat']:.2f} ± {r['mu_err_hesse']:.2f} | {r['mu_profile_68'][0]:.2f}–{r['mu_profile_68'][1]:.2f} | {r['Z']:.2f} | "
++                     f"{r['dev_ndf']:.2f} | {fds} |")
++        if "ratio_0_over_1" in rc and rc["ratio_0_over_1"].get("ratio") is not None:
++            q = rc["ratio_0_over_1"]
++            L.append(f"| {ch} | μ({labs[0]})/μ({labs[1]}) | | | | | {q['ratio']:.2f} ± {q['err']:.2f} | | | | |")
++        for tn, t in rc.get("tests", {}).items():
++            L.append(f"| {ch} | test `{tn}` h={np.round(t['h'], 2).tolist()} | | | | | μ={t['mu_common']:.2f} | "
++                     f"{t['mu_common_68'][0]:.2f}–{t['mu_common_68'][1]:.2f} | | χ²/ndf={t['chi2']:.2f}/{t['ndf']} | p={t['p']:.2f} |")
++    L.append("")
++    if rep.get("bins"):
++        L += ["Łączenie po kanałach per bin (suma profili, jak nominalne `combine`):", "", "| bin | kanały | μ | 68 % | Z |", "|---|---|---|---|---|"]
++        for lab, b in rep["bins"].items():
++            L.append(f"| {lab} | {', '.join(b['channels'])} | {b['mu']:.2f} | {b['mu_68'][0]:.2f}–{b['mu_68'][1]:.2f} | {b['Z']:.2f} |")
++        L.append("")
++    for tn, t in rep.get("tests", {}).items():
++        L.append(f"- Test łączny `{tn}`: μ globalne = {t['mu_global']:.2f} [{t['mu_global_68'][0]:.2f}, {t['mu_global_68'][1]:.2f}] (Z = {t['Z_global']:.2f}σ); "
++                 f"Δχ²(μ per bin wspólne w kanałach vs jedno μ z kształtem) = {t['dchi2']:.2f} / ndf {t['ndf']} → p = {t['p_flat_in_bins']:.2f}.")
++    ls = rep.get("like_sign")
++    if ls:
++        L += ["", f"Like-sign (INT): f_LS = N_LS/(N_LS+N_OS) w sygnale; LHCb LS/OS {ls['lhcb_ls_os'][0]:.2f}–{ls['lhcb_ls_os'][1]:.2f} "
++              f"→ f_LS {ls['lhcb_f_ls'][0]:.3f}–{ls['lhcb_f_ls'][1]:.3f}; DPS czyste → 0,5; SPS czyste → 0.", "",
++              "| kanał | N_LS sig | N_OS sig | f_LS dane ± | f_LS Pythia ± | Z odrzucenia Pythii | Z odrzucenia DPS |", "|---|---|---|---|---|---|---|"]
++        for ch, e in ls["channels"].items():
++            fp = f"{e['f_LS_pythia'][0]:.3f} ± {e['f_LS_pythia'][1]:.3f}" if e["f_LS_pythia"][0] is not None else "—"
++            L.append(f"| {ch} | {e['N_LS_sig']:.1f} | {e['N_OS_sig']:.1f} | {e['f_LS'][0]:.3f} ± {e['f_LS'][1]:.3f} | {fp} | "
++                     f"{e.get('Z_reject_pythia', float('nan')):.2f} | {e.get('Z_reject_dps', float('nan')):.2f} |")
++        for k in ("Z_reject_pythia_mc_combined", "Z_reject_dps_flat_combined"):
++            if k in ls:
++                L.append(f"- łącznie (kanały): {k} = {ls[k]:.2f}σ")
++    c = rep.get("combined_all_bins")
++    if c:
++        L.append(f"- Kontrola: μ wspólne we wszystkich (kanał × bin) = {c['mu']:.2f} [{c['mu_68'][0]:.2f}, {c['mu_68'][1]:.2f}], Z = {c['Z']:.2f}σ "
++                 f"(oczekiwane ≈ nominał dla kanałów fitowanych).")
++    L += ["", "Interpretacja: `pythia_mc` = zgodność kształtu z Pythią (SPS+MPI), `dps_flat` = zgodność z czystym DPS (Δφ płasko / like:opposite 1:1). "
++          "Małe p odrzuca hipotezę. f_MC z N par MC minbias — jego błąd nie jest wliczony w μ_i (patrz kolumna f_MC ±)."]
++    path = path or os.path.join(out, "tfin_diff.md")
++    with open(path, "w") as f:
++        f.write("\n".join(L) + "\n")
++    return path
++
++
++def load_diff(out: str) -> dict:
++    p = os.path.join(out, "pair_inputs_diff.json")
++    if not os.path.exists(p):
++        raise SystemExit(f"brak {p}: najpierw `charmtag pairs --unblind --diff ...`")
++    return json.load(open(p))
+diff --git a/charmtag/pairs/frozen.py b/charmtag/pairs/frozen.py
+index 1a62df0..b73cfbd 100644
+--- a/charmtag/pairs/frozen.py
++++ b/charmtag/pairs/frozen.py
+@@ -31,12 +31,21 @@ def _sf_cat(SFJ, T, dt, c):
+     return (_sf_cum(SFJ, dt, e1) * e1 - (_sf_cum(SFJ, dt, e0) * e0 if e0 > 0 else 0.0)) / (e1 - e0)
+ 
+ 
+-def sbsb_counts(legs: pd.DataFrame, ncat) -> dict:
+-    """Surowe zliczenia par sideband×sideband (nogi już tylko z sidebandów), jak m7_fit.py."""
++def sbsb_counts(legs: pd.DataFrame, ncat, diff=None) -> dict:
++    """Surowe zliczenia par sideband×sideband (nogi już tylko z sidebandów), jak m7_fit.py.
++    PD: `diff` (specyfikacja binów różniczkowych) → {k: zliczenia} per bin (pary nieokreślone pominięte)."""
+     L = legs[np.abs(legs.m - legs.decay_type.map(M0)) > legs.decay_type.map(SBW)]
+     P = L.merge(L, on=["source_file", "entry"], suffixes=("1", "2"))
+     P = P[(P.decay_type1 > P.decay_type2) | ((P.decay_type1 == P.decay_type2) & (P.cand1 < P.cand2))]
+     P = P[~shared_track(P)]
++    if diff is not None:
++        from .diff import diff_bin, nbins
++        db = diff_bin(P, diff)
++        return {k: _sbsb_from_pairs(P[db == k], ncat) for k in range(nbins(diff))}
++    return _sbsb_from_pairs(P, ncat)
++
++
++def _sbsb_from_pairs(P: pd.DataFrame, ncat) -> dict:
+     out = {}
+     for ch, (a, b) in CHANNELS.items():
+         q = P[(P.decay_type1 == max(a, b)) & (P.decay_type2 == min(a, b))]
+diff --git a/charmtag/pairs/hists.py b/charmtag/pairs/hists.py
+index a5db45b..c482c0e 100644
+--- a/charmtag/pairs/hists.py
++++ b/charmtag/pairs/hists.py
+@@ -78,12 +78,21 @@ def _shared_detail(P: pd.DataFrame, sh: np.ndarray, counts: dict):
+             e["shared_K_K"] += int((m & kk).sum()); e["shared_K_pi"] += int((m & kpi).sum()); e["shared_pi_pi"] += int((m & pipi).sum())
+ 
+ 
+-def build_pair_hists(L: pd.DataFrame, I: Inputs, region="blind"):
+-    """region: full (odsłonięte) | blind (bez centrum) | sbsb. Zwraca ({ch: array}, liczniki)."""
++def build_pair_hists(L: pd.DataFrame, I: Inputs, region="blind", diff=None):
++    """region: full (odsłonięte) | blind (bez centrum) | sbsb. Zwraca ({ch: array}, liczniki).
++    PD: `diff` = specyfikacja binów różniczkowych (`pairs.diff.spec_from_cfg`) → zwraca trzeci element {`<ch>__<k>`: array}
++    (te same pary, maska binu PO wecie śladów i ślepocie; pary poza binami/nieokreślone liczone w counts['diff_undefined']).
++    diff=None → zachowanie i wynik bitowo jak dotąd."""
+     L = leg_bins(L, I)
+     out = {ch: np.zeros((len(cat_pairs(I.ncat, *CHANNELS[ch])), I.nbins[CHANNELS[ch][0]], I.nbins[CHANNELS[ch][1]])) for ch in CHANNELS}
+     idx = {ch: {cp: k for k, cp in enumerate(cat_pairs(I.ncat, *CHANNELS[ch]))} for ch in CHANNELS}
+     counts = {"pairs_kept": 0, "region": region}
++    if diff is not None:
++        from .diff import diff_bin, nbins, hkey
++        nb = nbins(diff)
++        out_d = {hkey(ch, k): np.zeros_like(out[ch]) for ch in CHANNELS for k in range(nb)}
++        counts["diff_kept"] = {str(k): 0 for k in range(nb)}
++        counts["diff_undefined"] = 0
+     for sf, g in L.groupby("source_file", sort=False):
+         P = g.merge(g, on=["source_file", "entry"], suffixes=("1", "2"))
+         P = P[(P.decay_type1 < P.decay_type2) | ((P.decay_type1 == P.decay_type2) & (P.cand1 < P.cand2))]
+@@ -114,6 +123,11 @@ def build_pair_hists(L: pd.DataFrame, I: Inputs, region="blind"):
+         swap = same & ((c1 > c2) | ((c1 == c2) & rnd))
+         c1, c2 = np.where(swap, c2, c1), np.where(swap, c1, c2)
+         b1, b2 = np.where(swap, b2, b1), np.where(swap, b1, b2)
++        if diff is not None:
++            db = diff_bin(P, diff)                                   # zmienne symetryczne — kolejność nóg (swap) bez znaczenia
++            counts["diff_undefined"] += int((db < 0).sum())
++            for k in range(nb):
++                counts["diff_kept"][str(k)] += int((db == k).sum())
+         for ch, (ta, tb) in CHANNELS.items():
+             ta, tb = min(ta, tb), max(ta, tb)
+             s = (a == ta) & (b == tb)
+@@ -125,4 +139,12 @@ def build_pair_hists(L: pd.DataFrame, I: Inputs, region="blind"):
+             kk = lut[c1[s], c2[s]]
+             assert (kk >= 0).all(), "para kategorii poza modelem"
+             np.add.at(out[ch], (kk, b1[s], b2[s]), 1)
++            if diff is not None:
++                dbs = db[s]
++                for k in range(nb):
++                    m = dbs == k
++                    if m.any():
++                        np.add.at(out_d[hkey(ch, k)], (kk[m], b1[s][m], b2[s][m]), 1)
++    if diff is not None:
++        return out, counts, out_d
+     return out, counts
+diff --git a/charmtag/pairs/model.py b/charmtag/pairs/model.py
+index 564031a..ff1ad4a 100644
+--- a/charmtag/pairs/model.py
++++ b/charmtag/pairs/model.py
+@@ -223,7 +223,8 @@ class Expectation:
+             elif self.bbmode == "fact":
+                 v["BB"] = rho * v["BB_unit"]
+             else:
+-                v["BB"] = v["BB_unit"] * float(np.exp(self.GLM["c"][ch] + self.GLM["b"][(a, i)] + self.GLM["b"][(b, j)]))
++                # PD: pusta kategoria nogi (NF=0 → wiersz pominięty w GLM, P1-12a) nie ma parametru b → 0 (BB_unit i tak = 0)
++                v["BB"] = v["BB_unit"] * float(np.exp(self.GLM["c"][ch] + self.GLM["b"].get((a, i), 0.0) + self.GLM["b"].get((b, j), 0.0)))
+         return out
+ 
+ 
+diff --git a/tests/test_pd_diff.py b/tests/test_pd_diff.py
+new file mode 100644
+index 0000000..7d35bf9
+--- /dev/null
++++ b/tests/test_pd_diff.py
+@@ -0,0 +1,291 @@
++"""PD: pary różniczkowe (LS/OS, Δφ) — zmienne par, biny, bitowa identyczność starych wyjść, odzyskanie μ_i, end-to-end na syntetyku."""
++import hashlib
++import json
++import os
++import shutil
++
++import h5py
++import numpy as np
++import pandas as pd
++import pytest
++
++from charmtag import config as C
++from charmtag import pipeline as P
++from charmtag.pairs import CHANNELS
++from charmtag.pairs import build as B
++from charmtag.pairs import diff as DF
++from charmtag.pairs.frozen import sbsb_counts
++from charmtag.pairs.hists import build_pair_hists
++from charmtag.pairs.model import Model, region_mask
++from test_pairs import MB, toy_inputs, toy_legs
++
++# hash histogramów (toy_legs seed 2 × toy_inputs seed 1) z kodu PRZED etapem PD (snapshot AA_merge, 2.0.3) — bitowa identyczność
++BASE_HASH = {"blind": "b6d566d96fe5be89d1643549484618f6d17d9c1f6a2e69f41b7c1dc2006979dd",
++             "full": "f5234dcda00567b5d1a87ccc71f1a729671e049dfd912e39ee8146f8b53369f2"}
++
++
++def _hash(H):
++    return hashlib.sha256(b"".join(H[ch].astype("<f8").tobytes() for ch in CHANNELS)).hexdigest()
++
++
++def _kin_legs(seed=2, v11=False):
++    """Nogi toy + kinematyka; v11=True → bez ładunku córki 0 (jak h5 v1.1: D0 nieokreślone w `sign`)."""
++    L = toy_legs(seed)
++    rng = np.random.default_rng(seed + 100)
++    n = len(L)
++    return L.assign(eta=rng.uniform(-2.5, 2.5, n), phi=rng.uniform(-np.pi, np.pi, n), charge=np.where(L.decay_type == 4, rng.choice([-1, 1], n), 0),
++                    dq0=np.where((L.decay_type == 10) & (not v11), rng.choice([-1, 1], n), np.nan))
++
++
++# ----------------------------------------------------------------------------- zmienne par
++def test_wrap_dphi_and_sign():
++    assert np.allclose(DF.wrap_dphi([0.1, 3.0, -3.0, 0.0], [0.1, -3.0, 3.0, np.pi]), [0.0, 2 * np.pi - 6.0, 2 * np.pi - 6.0, np.pi])
++    s = DF.charm_sign([4, 4, 10, 10, 10, 10], [1, -1, 0, 0, 0, 0], [np.nan, np.nan, -1, 1, np.nan, -999])
++    assert list(s) == [1, -1, 1, -1, 0, 0]      # D⁺ → c, D⁻ → c̄, D0 (K⁻) → c, anty-D0 (K⁺) → c̄, bez ładunku K → nieokreślone
++
++
++def test_diff_bin_variants():
++    P = pd.DataFrame({"decay_type1": [4, 4, 4, 10, 10], "decay_type2": [4, 4, 10, 10, 10],
++                      "phi1": [0.0, 0.0, 0.0, 1.0, 0.0], "phi2": [0.5, 3.0, np.pi, -1.0, 0.0], "eta1": [0.0, 0.0, 1.0, 0.0, 0.0], "eta2": [0.5, 2.0, -1.0, 0.0, 0.0],
++                      "charge1": [1, 1, 1, 0, 0], "charge2": [1, -1, 0, 0, 0], "dq01": [np.nan] * 3 + [-1, -1], "dq02": [np.nan, np.nan, -1, -1, np.nan]})
++    sd = DF.spec_from_cfg({"diff": {"var": "dphi"}})
++    assert list(DF.diff_bin(P, sd)) == [0, 1, 1, 1, 0]                   # π dokładnie → ostatni bin domknięty
++    sy = DF.spec_from_cfg({"diff": {"var": "dy", "edges": [0, 1, 5]}})
++    assert list(DF.diff_bin(P, sy)) == [0, 1, 1, 0, 0]
++    ss = DF.spec_from_cfg({"diff": {"var": "sign"}})
++    assert list(DF.diff_bin(P, ss)) == [0, 1, 0, 0, -1]                  # D⁺D⁺ like, D⁺D⁻ opp, D⁺D0(K⁻) = c c like, D0D0(K⁻K⁻) like, bez K → nieokr.
++    sx = DF.spec_from_cfg({"diff": {"var": "sign_dphi"}})
++    assert DF.labels(sx) == ["like", "opp:[0,1.57)", "opp:[1.57,3.14]"]
++    assert list(DF.diff_bin(P, sx)) == [0, 2, 0, 0, -1]
++    assert np.allclose(DF.flat_fractions(sx), [0.5, 0.25, 0.25]) and np.allclose(DF.flat_fractions(sd), [0.5, 0.5])
++
++
++def test_spec_defaults_and_errors():
++    assert DF.spec_from_cfg({}) is None and B.pcfg({})["diff"] is None
++    s = DF.spec_from_cfg({"diff": True})
++    assert s["var"] == "sign" and s["channels"] == list(CHANNELS) and s["expect"] == "mc"
++    s = DF.spec_from_cfg({}, "dphi")
++    assert s["edges"] == [0.0, np.pi / 2, np.pi] and s["channels"] == ["D0D0", "DpD0"]
++    s = DF.spec_from_cfg({"diff": {"var": "dphi", "edges": [0, 1, 2, 3.1416]}}, "cfg")
++    assert len(s["edges"]) == 4
++    for bad in ({"var": "x"}, {"var": "dphi", "edges": [1, 0]}, {"expect": "y"}, {"channels": ["Q"]}):
++        with pytest.raises(SystemExit):
++            DF.spec_from_cfg({"diff": bad})
++
++
++# ----------------------------------------------------------------------------- histogramy: stare wyjścia bez zmian, biny sumują się do całości
++def test_hists_bitwise_identical_without_diff():
++    I = toy_inputs()
++    for reg in ("blind", "full"):
++        H, c = build_pair_hists(toy_legs(), I, reg)
++        assert _hash(H) == BASE_HASH[reg], reg
++        H2, c2 = build_pair_hists(_kin_legs(), I, reg)          # dodatkowe kolumny nóg nie zmieniają histogramów
++        assert _hash(H2) == BASE_HASH[reg] and c2["pairs_kept"] == c["pairs_kept"]
++
++
++def test_hists_diff_bins_partition_total():
++    I = toy_inputs()
++    L = _kin_legs()
++    H, c = build_pair_hists(L, I, "full")
++    for var in ("dphi", "sign", "sign_dphi"):
++        spec = DF.spec_from_cfg({"diff": {"var": var}})
++        Hd_tot, cd, Hd = build_pair_hists(L, I, "full", diff=spec)
++        assert _hash(Hd_tot) == BASE_HASH["full"] and cd["pairs_kept"] == c["pairs_kept"]
++        nb = DF.nbins(spec)
++        assert set(Hd) == {DF.hkey(ch, k) for ch in CHANNELS for k in range(nb)}
++        tot = sum(cd["diff_kept"].values()) + cd["diff_undefined"]
++        assert tot == c["pairs_kept"]
++        for ch in CHANNELS:
++            S = sum(Hd[DF.hkey(ch, k)] for k in range(nb))
++            assert (S <= H[ch]).all()
++            if var == "dphi":
++                assert np.array_equal(S, H[ch])                 # Δφ zawsze określone
++        if var == "sign":
++            assert cd["diff_undefined"] == 0                    # „v1.2": wszystkie nogi z ładunkiem → wszystko określone
++            _, cv, Hv = build_pair_hists(_kin_legs(v11=True), I, "full", diff=spec)
++            assert cv["diff_undefined"] > 0                     # v1.1: D0 nogi bez dq0 → nieokreślone, D⁺D⁺ kompletne
++            assert np.array_equal(sum(Hv[DF.hkey("DpDp", k)] for k in range(2)), H["DpDp"])
++            assert all(Hv[DF.hkey(ch, k)].sum() == 0 for ch in ("D0D0", "DpD0") for k in range(2))
++    # ślepo: centrum nigdy w binach
++    spec = DF.spec_from_cfg({"diff": {"var": "dphi"}})
++    _, _, Hb = build_pair_hists(L, I, "blind", diff=spec)
++    for ch in CHANNELS:
++        for k in range(2):
++            assert Hb[DF.hkey(ch, k)][:, region_mask(I, ch, "centre")].sum() == 0
++
++
++def test_sbsb_and_mc_rates_per_bin():
++    L = _kin_legs()
++    ncat = {10: 5, 4: 3}
++    spec = DF.spec_from_cfg({"diff": {"var": "dphi", "edges": [0, 1, 2, 3.1416]}})
++    tot = sbsb_counts(L, ncat)
++    per = sbsb_counts(L, ncat, diff=spec)
++    assert set(per) == {0, 1, 2}
++    for key, v in tot.items():
++        assert sum(per[k][key] for k in per) == v
++    legs_c = {dt: L[L.decay_type == dt].assign(truth=0) for dt in (10, 4)}
++    D = pd.DataFrame({"m": [], "dm": [], "truth": []})
++    p = B.pcfg({})
++    r = B.mc_rates(legs_c, D, p, diff=spec)
++    for ch in CHANNELS:
++        assert sum(r["n_pairs_diff"][ch]) + r["n_pairs_diff_undefined"][ch] == r["n_pairs"][ch]
++    f, e = DF.fractions_mc(r["n_pairs_diff"], spec, "DpDp")
++    assert abs(f.sum() - 1) < 1e-12 and (e > 0).all()
++    ff, mode = DF.fit_fractions(spec, {"DpDp": [1, 0, 0]}, "DpDp")
++    assert mode.startswith("flat") and np.allclose(ff, DF.flat_fractions(spec))   # pusty bin MC → płasko
++
++
++# ----------------------------------------------------------------------------- fit per bin: odzyskanie μ_i i testy kształtu
++def test_diff_fit_recovers_mu_per_bin(tmp_path):
++    I = toy_inputs(npair=300.0)
++    spec = DF.spec_from_cfg({"diff": {"var": "sign", "channels": ["DpDp"]}})
++    sb = sbsb_counts(_kin_legs(), {10: 5, 4: 3}, diff=spec)
++    n_mc = {ch: [30, 70] for ch in CHANNELS}
++    D = DF.diff_inputs_json(I, spec, sb, n_mc, {"diff_kept": {"0": 0, "1": 0}})
++    assert abs(D["bins"][0]["n_pair"]["DpDp"] - 0.3 * 300) < 1e-9 and D["bins"][0]["f_mode"]["DpDp"] == "mc"
++    mu_true = {0: 2.5, 1: 0.6}
++    rng = np.random.default_rng(7)
++    Hd = {}
++    for k in range(2):
++        cf = Model(DF.inputs_for_bin(I, D, k)).channel("DpDp")
++        x = cf.x0(); x[0] = mu_true[k]
++        Hd[DF.hkey("DpDp", k)] = rng.poisson(cf.lam(x)).astype(float)
++    rep = DF.run_diff(I, D, Hd, str(tmp_path))
++    b = rep["channels"]["DpDp"]["bins"]
++    for k, lab in enumerate(D["labels"]):
++        r = b[lab]
++        assert abs(r["mu_hat"] - mu_true[k]) < 2.5 * r["mu_err_hesse"], (lab, r["mu_hat"], r["mu_err_hesse"])
++        assert r["mu_profile_68"][0] < mu_true[k] + 2 * r["mu_err_hesse"]
++    t = rep["channels"]["DpDp"]["tests"]
++    assert set(t) == {"dps_flat", "pythia_mc"} and 0 <= t["pythia_mc"]["p"] <= 1
++    ls = rep["like_sign"]["channels"]["DpDp"]
++    assert 0 < ls["f_LS"][0] < 1 and "Z_reject_pythia" in ls
++    # f_LS^dane = μ_LS f_LS^MC / Σ: tu ≈ 2.5·0.3/(2.5·0.3+0.6·0.7) = 0.64
++    assert abs(ls["f_LS"][0] - 0.64) < 3 * ls["f_LS"][1] + 0.05
++    assert "like" in rep["bins"] and rep["tests"]["pythia_mc"]["ndf"] == 1
++    assert os.path.exists(tmp_path / "fit2d_diff.json")
++    path = DF.write_report(str(tmp_path), I, D, rep)
++    txt = open(path).read()
++    assert "Like-sign" in txt and "DpDp | like" in txt and "0.09" in txt
++
++
++def test_combine_bins_shape_scaling():
++    scan = {f"{m:g}": float((m - 1.0) ** 2) for m in DF.GRID}          # parabola z minimum w μ=1
++    r = DF.combine_bins({"a": scan})
++    assert abs(r["mu"] - 1.0) < 0.01 and abs(r["q_shape"]) < 1e-9 and abs(r["mu_68"][1] - r["mu_68"][0] - 2 * np.sqrt(0.5)) < 0.02
++    r2 = DF.combine_bins({"a": scan}, {"a": 2.0})                     # ΔNLL(2μ) → minimum w μ=0.5
++    assert abs(r2["mu"] - 0.5) < 0.01
++    r3 = DF.combine_bins({"a": scan, "b": {f"{m:g}": float((m - 3.0) ** 2) for m in DF.GRID}})
++    assert abs(r3["mu"] - 2.0) < 0.01 and abs(r3["q_shape"] - 4.0) < 0.05    # 2·(1+1)
++
++
++# ----------------------------------------------------------------------------- end-to-end na syntetyku (v1.1 i „v1.2" z ładunkiem córki)
++@pytest.fixture(scope="module")
++def synth_diff(tmp_path_factory):
++    from charmtag.synth import make
++    d = tmp_path_factory.mktemp("pd")
++    make(str(d / "h5"), n=6000, seed=4)
++    json.dump(MB, open(d / "mb.json", "w"))
++    cfg = C.load(None, {"paths": {"h5_dir": str(d / "h5"), "out_dir": str(d / "out")}, "training": {"xgb": {"n_estimators": 40}},
++                        "pairs": {"mb_rates_json": str(d / "mb.json")}})
++    for sp in ("D0", "Dplus"):
++        P.cmd_train(cfg, sp, "H")
++        P.cmd_apply(cfg, sp, "H")
++    return cfg, d
++
++
++def _make_v12(src_dir, dst_dir, shuffle=False, seed=3):
++    """„v1.2": te same wiersze + Dmeson_daughter0_charge (losowo ±1 dla D0, znak jak ładunek dla D⁺); shuffle → inna kolejność (test kontroli)."""
++    os.makedirs(dst_dir, exist_ok=True)
++    rng = np.random.default_rng(seed)
++    for fn in os.listdir(src_dir):
++        with h5py.File(os.path.join(src_dir, fn)) as f:
++            a = f["events"][:]
++        n = len(a)
++        dq = np.where(a["Dmeson_decayType"] == 4, -a["Dmeson_charge"], rng.choice([-1, 1], n)).astype(np.int32)
++        dq[rng.random(n) < 0.02] = -999
++        dt = np.dtype([(k, a.dtype.fields[k][0]) for k in a.dtype.names] + [("Dmeson_daughter0_charge", "<i4")])
++        b = np.empty(n, dt)
++        for k in a.dtype.names:
++            b[k] = a[k]
++        b["Dmeson_daughter0_charge"] = dq
++        if shuffle:
++            b = b[rng.permutation(n)]
++        with h5py.File(os.path.join(dst_dir, fn), "w") as f:
++            f.create_dataset("events", data=b)
++
++
++def test_end_to_end_sign_v11_then_v12(synth_diff):
++    cfg, d = synth_diff
++    out = B.pdir(cfg)
++    with pytest.raises(SystemExit):
++        B.cmd_pairs(cfg, unblind=False, diff="sign")
++    # v1.1: D⁺D⁺ określone (Dmeson_charge), D0 nogi nieokreślone
++    I, H, counts = B.cmd_pairs(cfg, unblind=True, diff="sign")
++    assert os.path.exists(os.path.join(out, "pairs_full_diff.npz")) and os.path.exists(os.path.join(out, "pair_inputs_diff.json"))
++    D = json.load(open(os.path.join(out, "pair_inputs_diff.json")))
++    Hd = dict(np.load(os.path.join(out, "pairs_full_diff.npz")))
++    assert D["labels"] == ["like", "opposite"] and I.meta["diff"]["var"] == "sign"
++    assert sum(Hd[DF.hkey("DpDp", k)].sum() for k in range(2)) == H["DpDp"].sum() > 0
++    assert all(Hd[DF.hkey(ch, k)].sum() == 0 for ch in ("D0D0", "DpD0") for k in range(2))
++    assert counts["diff_undefined"] > 0 and D["n_mc_pairs"]["DpDp"][0] + D["n_mc_pairs"]["DpDp"][1] == I.meta["mc_rates_unweighted"]["n_pairs"]["DpDp"]
++    H0 = dict(np.load(os.path.join(out, "pairs_full.npz")))
++    legs = pd.read_parquet(os.path.join(out, "legs_data.parquet")) if B._has_pa() else None
++    if legs is not None:
++        assert {"eta", "phi", "charge", "dq0"} <= set(legs.columns) and legs.dq0.isna().all()
++    # bez diff: nominalne histogramy identyczne
++    I2, H2, _ = B.cmd_pairs(cfg, unblind=True)
++    assert all(np.array_equal(H0[ch], H2[ch]) for ch in CHANNELS) and "diff" not in I2.meta
++    # v1.2 jako charge_source → D0 nogi określone; kontrola wierszy
++    v12 = str(d / "h5_v12")
++    _make_v12(str(d / "h5"), v12)
++    cfg12 = C.load(None, {"paths": {"h5_dir": cfg["paths"]["h5_dir"], "out_dir": cfg["paths"]["out_dir"]},
++                          "pairs": {"mb_rates_json": cfg["pairs"]["mb_rates_json"], "diff": {"var": "sign", "charge_source": v12}}})
++    I3, H3, c3 = B.cmd_pairs(cfg12, unblind=True, diff="cfg")
++    Hd3 = dict(np.load(os.path.join(out, "pairs_full_diff.npz")))
++    assert all(np.array_equal(H0[ch], H3[ch]) for ch in CHANNELS)
++    assert sum(Hd3[DF.hkey("D0D0", k)].sum() for k in range(2)) > 0 and c3["diff_undefined"] < counts["diff_undefined"]
++    D3 = json.load(open(os.path.join(out, "pair_inputs_diff.json")))
++    assert D3["n_mc_pairs"]["D0D0"][0] + D3["n_mc_pairs"]["D0D0"][1] > 0
++    bad = str(d / "h5_v12_bad")
++    _make_v12(str(d / "h5"), bad, shuffle=True)
++    cfgbad = C.load(None, {"paths": {"h5_dir": cfg["paths"]["h5_dir"], "out_dir": cfg["paths"]["out_dir"]},
++                           "pairs": {"mb_rates_json": cfg["pairs"]["mb_rates_json"], "diff": {"var": "sign", "charge_source": {"data_none": os.path.join(bad, "data_428770_d150_Donly_none.h5")}}}})
++    with pytest.raises(SystemExit):
++        B.cmd_pairs(cfgbad, unblind=True, diff="cfg")
++    shutil.rmtree(bad, ignore_errors=True)
++
++
++def test_fit2d_cli_diff_requires_unblind_and_inputs(synth_diff):
++    from charmtag.pairs.cli import main
++    cfg, d = synth_diff
++    with pytest.raises(SystemExit):
++        main(["fit2d", "--diff", "--out-dir", cfg["paths"]["out_dir"]])
++    empty = str(d / "empty_out")
++    os.makedirs(os.path.join(empty, "pairs"), exist_ok=True)
++    with pytest.raises(SystemExit):
++        main(["fit2d", "--unblind", "--diff", "--out-dir", empty])
++
++
++def test_d0_flavour_closest_mass():
++    """Znak D0 z hipotezy bliższej m0 (obie hipotezy tej samej pary torów: trk0/trk1 zamienione, dq0 przeciwne); brak drugiego rzędu → własny dq0."""
++    L = pd.DataFrame({"source_file": ["1"] * 5, "entry": [1, 1, 2, 2, 3], "trk0": [10, 11, 20, 21, 30], "trk1": [11, 10, 21, 20, 31],
++                      "m": [1865.0, 1900.0, 1950.0, 1868.0, 1800.0], "dq0": [-1, 1, 1, -1, np.nan]}, index=[7, 3, 9, 2, 5])
++    out = B.d0_flavour_closest_mass(L)
++    assert out.dq0.tolist()[:4] == [-1.0, -1.0, -1.0, -1.0] and np.isnan(out.dq0.iloc[4])
++    assert list(out.index) == list(L.index) and out.m.tolist() == L.m.tolist()           # nic poza dq0 się nie zmienia
++    assert DF.spec_from_cfg({"diff": True})["d0_flavour"] == "closest_mass"
++    with pytest.raises(SystemExit):
++        DF.spec_from_cfg({"diff": {"d0_flavour": "x"}})
++    # make_legs: dq0 nogi po arbitrażu = dq0 hipotezy bliższej m0 (niezależnie od tego, który rząd wygrał arbitraż)
++    sc = pd.DataFrame({"row": [0, 1], "run": [1, 1], "event": [5, 5], "m": [1.900, 1.865], "pt": [5.0, 5.0], "score": [0.9, 0.9],
++                       "veto_ok": [True, True], "truth": [-1, -1]})
++    T = pd.DataFrame({"row": [0, 1], "trk0": [10, 11], "trk1": [11, 10], "trk2": [-1, -1], "eta": [0, 0], "phi": [0, 0], "charge": [0, 0], "dq0": [1.0, -1.0]})
++    thr = {"0.9": 0.5, "0.65": 0.6, "0.45": 0.7, "0.3": 0.8}
++    E = {10: np.linspace(1750, 2000, 26), 4: np.linspace(1700, 2200, 26)}
++    p = {**B.pcfg({}), "diff": DF.spec_from_cfg({"diff": True})}
++    legs = B.make_legs(sc, T, 10, thr, p, None, E)
++    assert len(legs) == 1 and legs.dq0.iloc[0] == -1.0                                   # hipoteza z m=1865 (bliższa m0) ma dq0=−1
++    p2 = {**p, "diff": {**p["diff"], "d0_flavour": "hypothesis"}}
++    legs2 = B.make_legs(sc, T, 10, thr, p2, None, E)
++    assert legs2.cand.iloc[0] == legs.cand.iloc[0] and legs2.dq0.iloc[0] == T.dq0[legs2.cand.iloc[0]]   # ten sam arbitraż, dq0 własne

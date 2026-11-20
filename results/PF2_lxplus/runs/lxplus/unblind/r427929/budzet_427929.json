@@ -1,0 +1,374 @@
+{
+ "mu": 0.5274452681722148,
+ "stat": [
+  0.4449753241950038,
+  0.3997235963107662
+ ],
+ "f_jk": 1.133895133245075,
+ "f_jk_src": "jackknife 427929 (200 grup zdarze\u0144, tryb fixed)",
+ "w": [
+  0.33354596593828756,
+  0.47824874676547463,
+  0.18820528729623787
+ ],
+ "rows": [
+  {
+   "group": "Kszta\u0142ty",
+   "source": "szeroko\u015b\u0107 piku D0 \u00b16%",
+   "ch": [
+    0.08517775491890234,
+    0.026991485081361177,
+    0.0
+   ],
+   "status": "bez zmian",
+   "note": "zachowawczo; S/B par w 427929 \u2248 4\u00d7 lepsze (t\u0142o przy tych samych D*) \u2192 wiersze t\u0142a raczej mniejsze",
+   "common": 0.04131934045437999
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "szeroko\u015b\u0107 piku D\u207a \u00b13%",
+   "ch": [
+    0.0,
+    0.025573903822933453,
+    0.048635933150405375
+   ],
+   "status": "bez zmian",
+   "note": "zachowawczo; S/B par w 427929 \u2248 4\u00d7 lepsze (t\u0142o przy tych samych D*) \u2192 wiersze t\u0142a raczej mniejsze",
+   "common": 0.021384227224711366
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "skala masy D0 \u00b11 MeV",
+   "ch": [
+    0.020008341413900732,
+    0.007600946543122267,
+    0.0
+   ],
+   "status": "bez zmian",
+   "note": "zachowawczo; S/B par w 427929 \u2248 4\u00d7 lepsze (t\u0142o przy tych samych D*) \u2192 wiersze t\u0142a raczej mniejsze",
+   "common": 0.010308844722202153
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "skala masy D\u207a \u00b11 MeV",
+   "ch": [
+    0.0,
+    0.014740786350874946,
+    0.026922651859137336
+   ],
+   "status": "bez zmian",
+   "note": "zachowawczo; S/B par w 427929 \u2248 4\u00d7 lepsze (t\u0142o przy tych samych D*) \u2192 wiersze t\u0142a raczej mniejsze",
+   "common": 0.01211674802656909
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "t\u0142o fa\u0142szywych n\u00f3g exp(poly2)\u2192exp(poly3)",
+   "ch": [
+    0.010789877609398646,
+    0.05915959488651068,
+    0.061448085527869845
+   ],
+   "status": "bez zmian",
+   "note": "zachowawczo; S/B par w 427929 \u2248 4\u00d7 lepsze (t\u0142o przy tych samych D*) \u2192 wiersze t\u0142a raczej mniejsze",
+   "common": 0.043456776853786225
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "udzia\u0142 swap\u00f3w K\u2194\u03c0 D0 \u00b120%",
+   "ch": [
+    0.02562909928995394,
+    0.02737277499516999,
+    0.0
+   ],
+   "status": "bez zmian",
+   "note": "zachowawczo; S/B par w 427929 \u2248 4\u00d7 lepsze (t\u0142o przy tych samych D*) \u2192 wiersze t\u0142a raczej mniejsze",
+   "common": 0.021639478015729338
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "refleksja Ds\u2192KK\u03c0 w D\u207a (5%, p\u0142aska)",
+   "ch": [
+    0.0,
+    0.01305149351627044,
+    0.03824214593566411
+   ],
+   "status": "bez zmian",
+   "note": "zachowawczo; S/B par w 427929 \u2248 4\u00d7 lepsze (t\u0142o przy tych samych D*) \u2192 wiersze t\u0142a raczej mniejsze",
+   "common": 0.013439234480220375
+  },
+  {
+   "group": "Kszta\u0142ty",
+   "source": "refleksja \u039bc\u2192pK\u03c0 w D\u207a (1%, p\u0142aska)",
+   "ch": [
+    0.0,
+    0.003933395592972122,
+    0.008710385288346556
+   ],
+   "status": "bez zmian",
+   "note": "zachowawczo; S/B par w 427929 \u2248 4\u00d7 lepsze (t\u0142o przy tych samych D*) \u2192 wiersze t\u0142a raczej mniejsze",
+   "common": 0.0035204820785259454
+  },
+  {
+   "group": "SF",
+   "source": "SF D0 (score) \u00b11\u03c3",
+   "ch": [
+    0.1533998615128378,
+    0.07338257190772435,
+    0.0
+   ],
+   "status": "bez zmian",
+   "note": "te same SF co nomina\u0142 (z 428770)",
+   "common": 0.08626102803239552
+  },
+  {
+   "group": "SF",
+   "source": "SF D\u207a (score) \u00b11\u03c3",
+   "ch": [
+    0.0,
+    0.0986333742137302,
+    0.20146760003499553
+   ],
+   "status": "bez zmian",
+   "note": "",
+   "common": 0.08508855515243642
+  },
+  {
+   "group": "SF",
+   "source": "SF tagu D* \u00b114%",
+   "ch": [
+    0.08775771279238964,
+    0.0474625180817817,
+    0.0
+   ],
+   "status": "bez zmian",
+   "note": "",
+   "common": 0.051970120872818194
+  },
+  {
+   "group": "SF",
+   "source": "przeniesienie SF 428770 \u2192 427929",
+   "ch": [
+    0.0,
+    0.0566789141233901,
+    0.11657032755298657
+   ],
+   "status": "427929",
+   "note": "HYBSF v3 nomcat: SF pary DpDp 1,038/1,159 = 0.896 (0,6\u03c3 od 1) \u2192 noga D\u207a 0.946; D\u2070 z tagu D* 0,98 \u00b1 0,08 w obu runach \u2192 0",
+   "common": 0.04904577163486566
+  },
+  {
+   "group": "Normalizacja",
+   "source": "statystyka MC par (n_eff, baza nomina\u0142u)",
+   "ch": [
+    0.35,
+    0.27,
+    0.37
+   ],
+   "status": "bez zmian",
+   "note": "c_w(427929) = c_w(nomina\u0142)\u00b7R_X \u21d2 dziedziczy szum bazy nomina\u0142u (VER_budget A: 1/\u221an_eff)",
+   "common": 0.3155042060046868
+  },
+  {
+   "group": "Normalizacja",
+   "source": "model wag (w2\u2194w1)",
+   "ch": [
+    0.003657890534427888,
+    0.06458888444300093,
+    0.07495597180162039
+   ],
+   "status": "skaluje",
+   "note": "w 427929 wagi \u2248 1 (\u27e8n_trk\u27e9 14.6 vs 39,9 w 428770); ca\u0142y efekt wag |c_w,427929 \u2212 1| jako syst (428770: 0,052/0,189/0,307)",
+   "common": 0.04621673787894019
+  },
+  {
+   "group": "Normalizacja",
+   "source": "\u03ba_cls (korelacja \u03b5 n\u00f3g)",
+   "ch": [
+    0.061,
+    0.029,
+    0.058
+   ],
+   "status": "bez zmian",
+   "note": "w\u0142asno\u015b\u0107 klasyfikatora w MC fd_nd; jednostronnie w d\u00f3\u0142",
+   "common": 0.045131424241616105
+  },
+  {
+   "group": "Normalizacja",
+   "source": "tune Pythii (MPI \u2295 CR \u2295 Monash) \u2014 strona dolna \u03bc",
+   "ch": [
+    0.06099765000308202,
+    0.060595105444589153,
+    0.05405735408678636
+   ],
+   "status": "19.11 asym.",
+   "note": "d\u00f3\u0142: MPI \u2295 CR\u2193 \u2295 Monash; g\u00f3rna strona (fragmentacja ALICE, k = 0,65/0,73/0,81) liczona osobno \u2192 syst +g\u00f3ra/\u2212d\u00f3\u0142",
+   "common": 0.05949893318561821
+  },
+  {
+   "group": "Normalizacja",
+   "source": "wydajno\u015b\u0107(n_trk)",
+   "ch": [
+    0.019933685837692394,
+    0.010750298262248714,
+    0.008601743244923465
+   ],
+   "status": "bez zmian",
+   "note": "",
+   "common": 0.013409010727378273
+  },
+  {
+   "group": "Normalizacja",
+   "source": "mapa \u03b5: pr\u00f3bka MC",
+   "ch": [
+    0.0158067823668544,
+    0.006065884430446089,
+    0.0036319145114838136
+   ],
+   "status": "bez zmian",
+   "note": "",
+   "common": 0.008856835633882976
+  },
+  {
+   "group": "Normalizacja",
+   "source": "dyfrakcja \u00d71,5",
+   "ch": [
+    2.220446049250313e-16,
+    0.0,
+    0.0
+   ],
+   "status": "bez zmian",
+   "note": "w MBTS domieszka dyfrakcji wi\u0119ksza, ale wariant \u00d71,5 da\u0142 0,000 (D przy pT > 3 GeV z ND)",
+   "common": 7.406208223110501e-17
+  },
+  {
+   "group": "Normalizacja",
+   "source": "trigger MBTS (427929)",
+   "ch": [
+    0.004,
+    0.004,
+    0.004
+   ],
+   "status": "427929",
+   "note": "PS = 1 w 100 % LB (MULT G1a), plateau sptrk 0,996\u20130,998 (G1b); D* i pary ten sam trigger \u2192 znosi si\u0119",
+   "common": 0.004
+  },
+  {
+   "group": "Normalizacja",
+   "source": "pile-up (nogi z dw\u00f3ch zderze\u0144)",
+   "ch": [
+    0.001,
+    0.001,
+    0.001
+   ],
+   "status": "427929",
+   "note": "npu > 0 w 0,65 % zdarze\u0144; ~0,0065\u00b7r_D\u00b2/r_par \u2248 0,1 %",
+   "common": 0.001
+  },
+  {
+   "group": "\u03ba, kategorie",
+   "source": "\u03ba: plan B \u2194 jedno \u03ba na kana\u0142",
+   "ch": [
+    0.023628316469746835,
+    0.11081766815103167,
+    0.015287799413933878
+   ],
+   "status": "bez zmian",
+   "note": "",
+   "common": 0.06375678523392708
+  },
+  {
+   "group": "\u03ba, kategorie",
+   "source": "wydajno\u015bci kategorii score \u00b15% (niezale\u017cnie)",
+   "ch": [
+    0.061371101980167354,
+    0.053400717570530346,
+    0.08185585492447714
+   ],
+   "status": "bez zmian",
+   "note": "",
+   "common": 0.061414614438095656
+  }
+ ],
+ "groups": {
+  "Kszta\u0142ty": {
+   "ch": [
+    0.09180880049537694,
+    0.0780549137223523,
+    0.091675967020891
+   ],
+   "common": 0.07047997029384633
+  },
+  "SF": {
+   "ch": [
+    0.17672841782438206,
+    0.14345289922984533,
+    0.23276132653357925
+   ],
+   "common": 0.14066772321300172
+  },
+  "Normalizacja": {
+   "ch": [
+    0.3614129212810871,
+    0.28592630984937895,
+    0.3858869990417659
+   ],
+   "common": 0.3279193566675418
+  },
+  "\u03ba, kategorie": {
+   "ch": [
+    0.06576252350278698,
+    0.12301297578499484,
+    0.08327123030397549
+   ],
+   "common": 0.08852503899996346
+  }
+ },
+ "total": {
+  "ch": [
+   0.4178585869423927,
+   0.35150725558544993,
+   0.46735980987316883
+  ],
+  "common": 0.37432956278358603
+ },
+ "syst_abs": 0.19743835662717646,
+ "syst_rel_up": 0.551281436995618,
+ "syst_rel_dn": 0.37432956278358603,
+ "tune_up": [
+  0.5470593779964184,
+  0.3815197736595345,
+  0.2344649122343005
+ ],
+ "tune_dn": [
+  0.06099765000308202,
+  0.060595105444589153,
+  0.05405735408678636
+ ],
+ "ndstar": {
+  "stat": 0.2370548663242965,
+  "syst_nds": 0.3308509494610208,
+  "shape_mc": 0.0757370841222613,
+  "total": 0.41399693998703846,
+  "abs": 0.21836072703393983,
+  "src": "ub427nds (warianty NDS na 427929)",
+  "N": 2045.5167913048574,
+  "N_err": 484.8997095268769,
+  "scale": 1.4042974822871197
+ },
+ "Z": 1.567790006226344,
+ "Z_jk": 1.3826587311822325,
+ "pull_vs_pythia": 0.5758976635458575,
+ "diff_vs_428770": -0.9675547318277853,
+ "diff_sigma": -1.3334247028871806,
+ "sigma_diff": 0.7256163244409676,
+ "cw_ratio_vs_direct": {
+  "D0D0": 1.0193814904519907,
+  "DpD0": 1.396659456333136,
+  "DpDp": 1.079075778430236
+ },
+ "neff_427929": {
+  "D0D0": 36.60711233350258,
+  "DpD0": 50.12578983712953,
+  "DpDp": 13.485018278980311
+ }
+}

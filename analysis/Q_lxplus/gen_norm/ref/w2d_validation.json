@@ -1,0 +1,21 @@
+{
+ "mc_files": 80,
+ "mc_events": 19714175,
+ "data_events": 441691,
+ "data_mass_in_empty_mc_cells": 2.264123603035737e-06,
+ "unw": {
+  "dstar_per_event": 6.665254822989042e-05,
+  "data_over_mc": 11.47743065068493,
+  "n_dstar": 1314
+ },
+ "w1": {
+  "dstar_per_event": 0.00025241208454889385,
+  "data_over_mc": 3.030758219707244,
+  "n_dstar": 1314
+ },
+ "w2": {
+  "dstar_per_event": 0.0004513013338277197,
+  "data_over_mc": 1.695098025772802,
+  "n_dstar": 1314
+ }
+}

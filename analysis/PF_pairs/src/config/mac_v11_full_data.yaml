@@ -1,0 +1,27 @@
+# Etap P: data_428770 = merged joby 25–47 + części 1–24 (h5_v11/parts_data_1_24), BEZ scalania w jeden plik.
+# Odczyt strumieniowy po plikach; row w scores/*.h5 = wiersz globalny (attrs file_offsets, source).
+# Glob bierze tylko gotowe *.h5 (bez *.part) — uruchamiać po zakończeniu START_dane_1_24.command.
+paths:
+  h5_dir: ~/Documents/charm/h5_v11/merged-v1.1-Aug7
+  out_dir: ~/Documents/charm/charm_work/L_charmtag/runs/v11_full_data
+  samples:
+    data_none:
+      - data_428770_d150_Donly_none.h5
+      - ../parts_data_1_24/data_428770_*_none.h5
+    data_tag:
+      - data_428770_d150_Donly_single_tag.h5
+      - ../parts_data_1_24/data_428770_*_single_tag.h5
+  sample_info:
+    # 39 plików ROOT na CERNBox (joby 2, 4, 11–47); lumi_fraction_jobs = n_jobs/39 (PRZYBLIŻENIE, joby ≠ równa lumi)
+    data_none:
+      jobs_total: 39
+      jobs: {data_428770_d150_Donly_none.h5: "25-47"}
+    data_tag:
+      jobs_total: 39
+      jobs: {data_428770_d150_Donly_single_tag.h5: "25-47"}
+io:
+  max_bkg_train: 3000000
+  max_sig_train: 2000000
+training:
+  xgb:
+    n_jobs: 4

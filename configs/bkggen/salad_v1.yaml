@@ -1,0 +1,31 @@
+# SALAD v1.0 (etap B1) — produkcyjny estymator kształtu tła pod pikiem: MC tła (truth ≥ 8) ważone do danych w SB
+# klasyfikatorem warunkowanym masą (t = (m−m0)/t_scale), wagi interpolowane do SR. Jeden plik = jeden zamrożony artefakt;
+# zmiana czegokolwiek poniżej = nowa wersja (version). Użycie: charmtag.bkggen.salad_v1.fit_salad_v1 / run.
+version: "1.1"            # 1.1 (B1-D0, 2026-11-05): mc_truth_min per gatunek (D0 = 2)
+kind: hgb                 # produkcyjny: HistGradientBoosting z t jako wejściem (S8: C2ST pasma danych 0,510)
+kind_crosscheck: sk_mlp   # kontrola: sklearn MLP 128-128-64 na z-PIT + t, gładki w m (S8: closure 0,510)
+features:                 # cechy H (charmtag.features.compute), kolejność = kolejność wejścia klasyfikatora
+  [log_pt, abs_eta, chi2, Lxy, impact_sig, abs_impact_z0, d_max_abs_d0,
+   pointing, abs_cos_theta_star, abs_impact_sig, d_min_abs_d0, d_max_abs_z0, d_max_abs_eta,
+   dedx_K, log_p_K, npts_K, dedx_pi_max, log_p_pi_min]
+t_scale: 0.1              # t = (m − m0) / 0.1  [GeV]
+clip: [0.05, 20.0]        # obcięcie wag przed normalizacją do średniej 1
+seed: 0
+max_n: 400000             # maks. kandydatów na klasę do fitu klasyfikatora
+mc_truth_min: 8           # tło MC = truth_category ≥ 8 (gdy kolumna `truth` obecna) — domyślne
+mc_truth_min_species:     # v1.1 (B1-D0 §6c/6f): D0 — truth 2–7 (częściowo dopasowany charm) = 1,05 % tła w SR i SB, niewidoczne dla C2ST
+  D0: 2                   #   i nieskorygowane przy ≥ 8 (ε_B @50 −12 %); ≥ 2 (= wszystko poza sygnałem 0/1, w tym swapy 100/101) → closure 0,999/1,003/0,991
+  Dplus: 8                #   D⁺: truth 2–7 = 0,14 % w SB (B1) — bez znaczenia; zostaje 8
+# kryteria akceptacji fitu (run() zapisuje `ok` = wszystkie spełnione; nic nie przerywa)
+min_neff_over_N_SR: 0.5   # n_eff/N wag w SR (S8: 0,68–0,87)
+min_n_data_sb: 20000
+max_c2st_band: 0.53       # C2ST dane vs MC ważone w paśmie (jedyny test na danych bez zaglądania w SR)
+regions:                  # [GeV] |m−m0| < sr_half → SR; band → pasmo walidacyjne (nie w ficie); > sb_min → SB (fit)
+  D0:    {m0: 1.86484, mass_range: [1.75, 2.00], sr_half: 0.055, band: [0.055, 0.075], sb_min: 0.075}
+  Dplus: {m0: 1.86966, mass_range: [1.70, 2.20], sr_half: 0.045, band: [0.045, 0.070], sb_min: 0.070}
+sk_mlp: {hidden: [128, 128, 64], max_iter: 60, alpha: 1.0e-4, batch_size: 2048}
+hgb:    {max_iter: 300, learning_rate: 0.08, max_leaf_nodes: 31, l2_regularization: 1.0}
+c2st:   {max_n: 120000, n_folds: 3}
+# Ograniczenie (B1, closure adwersarialny): SALAD zakłada, że skład tła zmienia się GŁADKO w m między SB a SR.
+# Składnik zlokalizowany pod pikiem (niewidoczny w SB) przechodzi do ε_B bez korekty — patrz charm-B1-salad-v1.md.
+# Systematyka ε_B pod pikiem (B1/B1-D0): D⁺ ±5/10/25 %, D0 ±5/10/15 % @WP80/70/50 (charmtag.syst.bkg_shape_salad).

@@ -1,0 +1,5 @@
+# S5: fit masy D0 z szablonem refleksji K↔π z DANYCH (kształt; normalizacja r z MC albo z danych) — tylko krok fit
+fit:
+  reflection_source: data
+  refl_data: {sample: data_none, win: 0.025, sb: [0.050, 0.100], smooth_bins: 1.5, min_peak: 200, norm: mc_ratio}
+  output_tag: _refldata

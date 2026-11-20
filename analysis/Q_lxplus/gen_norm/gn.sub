@@ -1,0 +1,16 @@
+# Węzeł DAG gen_norm (VARS step, kind, tag, src, cpus, mem, flavour, penv z gn.dag).
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/gen_norm/gn_job.sh $(step) $(kind) $(tag) $(src)
+output     = $(Q)/logs/gen_norm/$(step)_$(kind)_$(tag).$(ClusterId).out
+error      = $(Q)/logs/gen_norm/$(step)_$(kind)_$(tag).$(ClusterId).err
+log        = $(Q)/logs/gen_norm/gn.log
+request_cpus   = $(cpus)
+request_memory = $(mem)
+request_disk   = 3GB
++JobFlavour    = "$(flavour)"
+should_transfer_files = NO
+getenv     = False
+environment = "$(penv)"
+queue

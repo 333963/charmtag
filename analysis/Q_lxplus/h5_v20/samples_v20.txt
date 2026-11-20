@@ -1,0 +1,8 @@
+# klucz        katalog w $RAW20 (/eos/user/k/klyczak/charm_raw_v20)   presele            oczekiwane pliki dpt3to150 (EOS 17.11.2026)
+data_428770    data_428770                                          none,single_tag    97
+data_427929    data_427929                                          none,single_tag    458
+mb_nd          mb_nd                                                none               78
+fd_nd          fd_nd                                                none               24
+mb_sd          mb_sd                                                none               10
+mb_dd          mb_dd                                                none               10
+mb_cd          mb_cd                                                none               20

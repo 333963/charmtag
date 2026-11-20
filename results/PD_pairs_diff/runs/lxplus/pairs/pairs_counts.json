@@ -1,0 +1,106 @@
+{
+ "pairs_kept": 69934,
+ "region": "full",
+ "diff_kept": {
+  "0": 15160,
+  "1": 16646
+ },
+ "diff_undefined": 38128,
+ "pairs_shared_track": 226976,
+ "pairs_before_veto": 296910,
+ "shared_detail": {
+  "D0D0": {
+   "sbsb": {
+    "n_pairs": 2358,
+    "n_shared": 990,
+    "shared_1track": 990,
+    "shared_2tracks": 0,
+    "shared_K_K": 231,
+    "shared_K_pi": 480,
+    "shared_pi_pi": 279
+   },
+   "arms": {
+    "n_pairs": 7753,
+    "n_shared": 3243,
+    "shared_1track": 3243,
+    "shared_2tracks": 0,
+    "shared_K_K": 817,
+    "shared_K_pi": 1510,
+    "shared_pi_pi": 916
+   },
+   "centre": {
+    "n_pairs": 6194,
+    "n_shared": 2645,
+    "shared_1track": 2645,
+    "shared_2tracks": 0,
+    "shared_K_K": 671,
+    "shared_K_pi": 1245,
+    "shared_pi_pi": 729
+   }
+  },
+  "DpD0": {
+   "sbsb": {
+    "n_pairs": 17880,
+    "n_shared": 10685,
+    "shared_1track": 5281,
+    "shared_2tracks": 5404,
+    "shared_K_K": 3649,
+    "shared_K_pi": 5283,
+    "shared_pi_pi": 4465
+   },
+   "arms": {
+    "n_pairs": 38006,
+    "n_shared": 22612,
+    "shared_1track": 10719,
+    "shared_2tracks": 11893,
+    "shared_K_K": 7383,
+    "shared_K_pi": 11593,
+    "shared_pi_pi": 9129
+   },
+   "centre": {
+    "n_pairs": 12415,
+    "n_shared": 6303,
+    "shared_1track": 4141,
+    "shared_2tracks": 2162,
+    "shared_K_K": 727,
+    "shared_K_pi": 4168,
+    "shared_pi_pi": 1408
+   }
+  },
+  "DpDp": {
+   "sbsb": {
+    "n_pairs": 92088,
+    "n_shared": 78065,
+    "shared_1track": 23921,
+    "shared_2tracks": 54144,
+    "shared_K_K": 25653,
+    "shared_K_pi": 33807,
+    "shared_pi_pi": 41975
+   },
+   "arms": {
+    "n_pairs": 92799,
+    "n_shared": 78640,
+    "shared_1track": 24248,
+    "shared_2tracks": 54392,
+    "shared_K_K": 25109,
+    "shared_K_pi": 34373,
+    "shared_pi_pi": 41998
+   },
+   "centre": {
+    "n_pairs": 27417,
+    "n_shared": 23793,
+    "shared_1track": 6318,
+    "shared_2tracks": 17475,
+    "shared_K_K": 8385,
+    "shared_K_pi": 9623,
+    "shared_pi_pi": 13567
+   }
+  }
+ },
+ "mc_undefined": {
+  "D0D0": 22,
+  "DpD0": 41,
+  "DpDp": 0
+ },
+ "track_id": "d0z0"
+}

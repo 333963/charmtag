@@ -1,0 +1,56 @@
+{
+ "fields": {
+  "generated": "2026-11-04 20:33 UTC",
+  "pf": "PF2_lxplus/runs/lxplus",
+  "mode": "\u015aLEPO",
+  "unblind_src": "",
+  "norm_mode": "direct",
+  "track_id": "d0z0",
+  "pairs_before_veto": 296782,
+  "pairs_shared_track": 226944,
+  "shared_pct": "76.5",
+  "pairs_kept": 56657,
+  "region": "blind",
+  "blind_rows": "| D0D0 | \u2014 | \u2014 | \u2014 | 1.38 | 1.90 | 0.79 | 0.57 | 0.79 | 0.65 | \u2014 | \u2014 |\n| D\u207aD0 | \u2014 | \u2014 | \u2014 | 1.60 | 2.71 | 0.69 | 0.41 | 1.79 | 0.94 | \u2014 | \u2014 |\n| D\u207aD\u207a | \u2014 | \u2014 | \u2014 | 0.47 | 1.10 | 2.72 | 0.90 | 3.05 | 1.07 | \u2014 | \u2014 |",
+  "Zq_nominal": "2.17",
+  "Zq_pf": "3.49",
+  "toys_rows": "| D0D0 | \u2014 | -0.03 | 0.69 | 10000 | \u2014 | \u2714 | \u2714 |\n| D\u207aD0 | \u2014 | 0.03 | 0.68 | 10000 | \u2014 | \u2714 | \u2714 |\n| D\u207aD\u207a | \u2014 | -0.08 | 0.68 | 10000 | \u2014 | \u2714 | \u2714 |",
+  "syst_rows": "| D0D0 | 0.57 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 |\n| D\u207aD0 | 0.41 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 |\n| D\u207aD\u207a | 0.90 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 |",
+  "n_syst_json": 7,
+  "mix_line": "D0D0: \u03c7\u00b2/ndf same vs mix \u2014, corr same \u2014 / mix \u2014 \u00b7 D\u207aD0: \u03c7\u00b2/ndf same vs mix \u2014, corr same \u2014 / mix \u2014 \u00b7 D\u207aD\u207a: \u03c7\u00b2/ndf same vs mix \u2014, corr same \u2014 / mix \u2014",
+  "gate_rows": "| G1 | toys \u03c3(pull) 0,9\u20131,1 | \u2014 | \u2014 | \u2014 |\n| G2 | toys |bias| < 0,1\u03c3 | \u2714 | \u2714 | \u2714 |\n| G3 | pokrycie 68 % 0,62\u20130,74 | \u2714 | \u2714 | \u2714 |\n| G4 | dev/ndf \u015blepy < 1,5 | \u2714 | \u2714 | \u2714 |\n| G6 | udzia\u0142 wsp\u00f3lnych \u015blad\u00f3w w pasie (\u0142\u0105czny) | \u2716 | \u2716 | \u2714 |\n| G7 | syst/stat < 1 | \u2014 | \u2014 | \u2014 |\n| G11 | Z_A PF \u2265 Z_A nom \u2212 0,1 | \u2714 | \u2714 | \u2714 |",
+  "verdict": "NIEKOMPLETNE",
+  "unblind_section": "\u2014 (nie ods\u0142oni\u0119te; `submit_unblind.sh submit` po decyzji)",
+  "Z_obs": "\u2014",
+  "Z_obs_note": "\u2014"
+ },
+ "gates": {
+  "D0D0": {
+   "G4": true,
+   "G11": true,
+   "G1": null,
+   "G2": true,
+   "G3": true,
+   "G7": null,
+   "G6": false
+  },
+  "DpD0": {
+   "G4": true,
+   "G11": true,
+   "G1": null,
+   "G2": true,
+   "G3": true,
+   "G7": null,
+   "G6": false
+  },
+  "DpDp": {
+   "G4": true,
+   "G11": true,
+   "G1": null,
+   "G2": true,
+   "G3": true,
+   "G7": null,
+   "G6": true
+  }
+ }
+}

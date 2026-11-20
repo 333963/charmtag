@@ -1,0 +1,51 @@
+{
+ "anchors": 303497,
+ "anchors_found_rows": 303497,
+ "anchors_found_unique": 303497,
+ "ref_events": 441690,
+ "files": [
+  {
+   "tag": "data_428770_000031",
+   "anchors": 53129,
+   "blocks": 1,
+   "ref_events": 77639,
+   "entries": 77639
+  },
+  {
+   "tag": "data_428770_000032",
+   "anchors": 53407,
+   "blocks": 1,
+   "ref_events": 78002,
+   "entries": 78002
+  },
+  {
+   "tag": "data_428770_000033",
+   "anchors": 26537,
+   "blocks": 1,
+   "ref_events": 38463,
+   "entries": 77023
+  },
+  {
+   "tag": "data_428770_000053",
+   "anchors": 26849,
+   "blocks": 1,
+   "ref_events": 38908,
+   "entries": 77245
+  },
+  {
+   "tag": "data_428770_000054",
+   "anchors": 65688,
+   "blocks": 1,
+   "ref_events": 95153,
+   "entries": 95153
+  },
+  {
+   "tag": "data_428770_000055",
+   "anchors": 77887,
+   "blocks": 1,
+   "ref_events": 113525,
+   "entries": 113525
+  }
+ ],
+ "gap": 1000
+}

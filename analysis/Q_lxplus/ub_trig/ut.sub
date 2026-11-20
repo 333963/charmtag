@@ -1,0 +1,17 @@
+# Węzeł DAG UBTRIG (VARS step, g, cpus, mem, flavour, penv).
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/ub_trig/ut_job.sh $(step) $(g)
+output     = $(Q)/logs/ubtrig/ut_$(step)_$(g).$(ClusterId).out
+error      = $(Q)/logs/ubtrig/ut_$(step)_$(g).$(ClusterId).err
+log        = $(Q)/logs/ubtrig/ut.log
+request_cpus   = $(cpus)
+request_memory = $(mem)
+request_disk   = 6GB
++JobFlavour    = "$(flavour)"
++JobBatchName  = "$(bname:charm_ubtrig)"
+should_transfer_files = NO
+getenv     = False
+environment = "$(penv)"
+queue

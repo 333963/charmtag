@@ -1,0 +1,21 @@
+name: tests
+on: [push, pull_request]
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      # Zależność `charmbkg` (projekt B) jest w prywatnym repo charmbkg; runner nie ma do niego dostępu i celowo nie dostaje
+      # żadnego sekretu. Dlatego zależności instalujemy jawnie (lista = pyproject: dependencies + extras dev, onnx, bez charmbkg),
+      # a sam pakiet z --no-deps. tests/conftest.py pomija wtedy pliki testów projektu B i wypisuje to w nagłówku i podsumowaniu.
+      # Pełny zestaw (z charmbkg) uruchamia się lokalnie: pip install -e ".[dev,onnx]" && pytest -q -m "not slow".
+      - run: pip install numpy pandas h5py scipy scikit-learn pyyaml pytest ruff "iminuit>=2.20" matplotlib xgboost onnxruntime
+      - run: pip install --no-deps -e .
+      - run: ruff check .   # zakres: pyproject [tool.ruff].include
+      - run: pytest -q -m "not slow"

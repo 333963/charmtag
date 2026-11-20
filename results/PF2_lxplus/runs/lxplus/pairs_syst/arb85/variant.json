@@ -1,0 +1,6 @@
+{
+ "name": "arb85",
+ "pairs_override": {
+  "d0_arbitration_wp": 0.85
+ }
+}

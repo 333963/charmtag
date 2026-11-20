@@ -1,0 +1,16 @@
+# trigmc: węzeł pojedynczy (combine)
+Q          = /afs/cern.ch/user/k/klyczak/private/charm_q/Q_lxplus
+universe   = vanilla
+executable = /bin/bash
+arguments  = $(Q)/trigmc/tm_job.sh $(args)
+environment = "TM_OUT=$(tmout)"
+output     = $(Q)/logs/trigmc/$(node).$(ClusterId).out
+error      = $(Q)/logs/trigmc/$(node).$(ClusterId).err
+log        = $(Q)/logs/trigmc/tm.log
+request_cpus   = 1
+request_memory = 8GB
+request_disk   = 4GB
++JobFlavour    = "longlunch"
+should_transfer_files = NO
+getenv     = False
+queue
